@@ -6,12 +6,11 @@
 # change 'tests => 1' to 'tests => last_test_to_print';
 
 use Test;
-BEGIN { plan tests => 6};
+BEGIN { plan tests => 5};
 
 use HTML::Perlinfo;
 #########################
 
-ok ( test(GENERAL) );
 ok ( test(VARIABLES) );
 ok ( test(APACHE) );
 ok ( test(MODULES) );

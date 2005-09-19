@@ -1,7 +1,7 @@
 use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME              => 'HTML::Perlinfo',
-    VERSION           => '1.00',
+    VERSION           => '1.05',
     PM 		      =>             
     			{
 			'lib/HTML/Perlinfo.pm'             => '$(INST_LIBDIR)/Perlinfo.pm',

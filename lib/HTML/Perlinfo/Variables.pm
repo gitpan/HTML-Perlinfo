@@ -12,17 +12,17 @@
 		  } else {
 			  $gpcse_value = "<i>no value</i>";
 		  }
-		  $HTML .= perl_info_print_table_row(2, "$gpcse_name", "$gpcse_value");
+		  $HTML .= print_table_row(2, "$gpcse_name", "$gpcse_value");
 	  }
 	return $HTML;
   }
 
-  sub perl_info_print_variables {
+  sub print_variables {
 
 	return join '', SECTION("Environment Variables"),
-		  	perl_info_print_table_start(),
-		  	perl_info_print_table_header(2, "Variable", "Value"),
+		  	print_table_start(),
+		  	print_table_header(2, "Variable", "Value"),
 		  	((defined($ENV{'SERVER_SOFTWARE'})) ?  perl_print_gpcse_array("_SERVER") : perl_print_gpcse_array("_ENV",)),
-		  	perl_info_print_table_end();
+		  	print_table_end();
    }
 1;

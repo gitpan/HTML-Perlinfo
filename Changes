@@ -1,5 +1,15 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+
+1.05    - Cleaned up some code that caused a few warnings in Config.pm and Perlinfo.pm 
+	- Moved links to a new links sub. Added no_links method.
+	- Added title method. Cleaned up some css code
+	- Added variable extraction for Apache version
+	- Made module version detection to be more silent with problems
+	- Simplified module directories listing
+	- Removed a potentially problematic test
+	- Updated pod and added security section
+
 1.00  Thu Aug 18 12:58:36 2005
 	- original version; created by h2xs 1.23 with options
 		-A -X -n HTML::Perlinfo
