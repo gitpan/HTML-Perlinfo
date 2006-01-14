@@ -1,11 +1,11 @@
 sub print_httpd {
 
-        return join '', SECTION("apache"), 
+        return join '', print_section("apache"), 
 			print_table_start(), 
 			print_apache(), 
 			print_table_end(),
 	
-			SECTION("Apache Environment"), 
+			print_section("Apache Environment"), 
 			print_table_start(), 
 			print_table_header(2, "Variable", "Value"), 
 			print_apache_environment(), 
@@ -32,7 +32,7 @@ sub print_apache {
 		@mods  =  $apache->static_mods;
 	} 
 	else {
-		$version = $ENV{'SERVER_SOFTWARE'} =~ /(\d+[\.\d]*)/; 
+		($version) = $ENV{'SERVER_SOFTWARE'} =~ /(\d+[\.\d]*)/; 
 	}  
 
 	return join '', print_table_row(2, "Apache Version", "$version"),

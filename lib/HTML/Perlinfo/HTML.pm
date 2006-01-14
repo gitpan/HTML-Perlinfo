@@ -1,54 +1,68 @@
-sub new {
+package HTML::Perlinfo::HTML;
 
-	my $self = {};
-	while (my($field, $val) = splice(@_, 1, 2)) {
-	if (defined $field) {  $$field = $val; }
-	else { Carp::croak "$field is an invalid CSS field name";}
-	}
-	bless($self);          
-	return $self;
-        
+our @ISA = qw(Exporter);
+our @EXPORT = qw(initialize_globals new print_css print_style print_htmlhead print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_perl_license links info_all info_general info_modules info_credits info_config info_apache info_variables info_license vomit title bg_image bg_position bg_repeat bg_attribute bg_color ft_family ft_color lk_color lk_decoration lk_bgcolor lk_hvdecoration header_bgcolor header_ftcolor leftcol_bgcolor leftcol_ftcolor rightcol_bgcolor rightcol_ftcolor no_links);
+require Exporter;
+
+use Carp ();
+
+#sub import {
+# my $pkg = shift;
+# my $callpkg = caller(0);
+# %{"$callpkg\::"} = (%{"$callpkg\::"}, %{"$pkg\::"});
+#}
+
+sub new {
+        my $pkg = shift;
+        my $self = {};
+        while (my($field, $val) = splice(@_, 0, 2)) {
+        if (defined $field) {  $$field = $val; }
+        else { Carp::croak "$field is an invalid CSS field name";}
+        }
+        bless $self, $pkg;
+        return $self;
+    
 }
 
 sub info_all {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_ALL);    
+	HTML::Perlinfo::perlinfo(INFO_ALL);    
 }
 sub info_general {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_GENERAL);    
+	HTML::Perlinfo::perlinfo(INFO_GENERAL);    
 }
 sub info_modules {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_MODULES);    
+	HTML::Perlinfo::perlinfo(INFO_MODULES);    
 }
 sub info_credits {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_CREDITS);    
+	HTML::Perlinfo::perlinfo(INFO_CREDITS);    
 }
 sub info_config {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_CONFIG);    
+	HTML::Perlinfo::perlinfo(INFO_CONFIG);    
 }
 sub info_apache {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_APACHE);    
+	HTML::Perlinfo::perlinfo(INFO_APACHE);    
 }
 sub info_variables {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_VARIABLES);    
+	HTML::Perlinfo::perlinfo(INFO_VARIABLES);    
 }
 sub info_license {
 	my $meth = (caller 0)[3];
 	Carp::croak "$meth does not accept a parameter" if $_[1];
-	perlinfo(INFO_LICENSE);    
+	HTML::Perlinfo::perlinfo(INFO_LICENSE);    
 }
 
 sub vomit {
@@ -153,8 +167,6 @@ sub no_links {
 sub initialize_globals {
 
 our $link_switch = 1;
-our $highlight = 0;
-our %colors;
 
 our $title = 'perlinfo()';
 our $bg_image = "";
@@ -205,7 +217,6 @@ td, th { border: 1px solid #000000; font-size: 75%; vertical-align: baseline;}
 .modules table {border: 0;}
 .modules td { border:0; font-size: 100%; vertical-align: baseline;}
 .modules th { border:0; font-size: 100%; vertical-align: baseline;}
-
 h1 {font-size: 150%;}
 h2 {font-size: 125%;}
 .p {text-align: left;}
@@ -277,7 +288,7 @@ sub  print_table_colspan_header {
 
  sub print_table_color_start {
 
- 	return qq~<table class="modules" cellpadding=0 cellspacing=2 border=0 width="600"><tr>\n~;
+ 	return qq~<table class="modules" cellpadding=4 cellspacing=4 border=0 width="600"><tr>\n~;
  }
 
  sub print_table_color_end {
@@ -289,24 +300,31 @@ sub  print_table_colspan_header {
  sub print_color_box {
 
 	return  qq ~<td>
-                    <table border=0><tr><td>
-                    <table class="modules" border=0 width=50 height=50 align=left bgcolor="$_[0]">
-                    <tr bgcolor="$_[0]"> <td color="$_[0]">&nbsp; </td></tr>
-                    </table><tr><td>$_[1]</td></tr>
-                    </table>
+                      <table border=0>
+                       <tr><td>
+                          <table class="modules" border=0 width=50 height=50 align=left bgcolor="$_[0]">
+                            <tr bgcolor="$_[0]"> 
+				<td color="$_[0]">
+				 &nbsp; 
+				</td>
+			    </tr>
+                          </table>
+                       </tr></td>
+		       <tr><td><small>$_[1]</small></td></tr>
+                      </table>
                     </td>~;
  }
 
  sub print_table_row_color {
 
   	  my $num_cols = $_[0];
-          my $HTML = "<tr>";
+          my $HTML = "<tr bgcolor=\"$_[1]\">";
 
           for ($i=0; $i<$num_cols; $i++) {
 
-                  $HTML .= "<td class=\"$_[1]\">";
+                  $HTML .= "<td bgcolor=\"$_[1]\">";
 
-                  my $row_element = $_[$i+2];
+                  my $row_element = $_[$i+2]; # start at the 2nd element
                   if ((not defined ($row_element)) || ($row_element !~ /\S/)) {
                           $HTML .= "<i>no value</i>";
                   } else {
@@ -368,7 +386,7 @@ sub  print_table_colspan_header {
   }
 
 
-  sub SECTION  {
+  sub print_section  {
 
 	  return "<h2>" . $_[0] . "</h2>\n"; 
 
@@ -392,50 +410,31 @@ END_OF_HTML
 
   }
 
- sub print_script {
-
-   	my $HTML =  "<SCRIPT LANGUAGE=\"JavaScript\">\n<!--\n function showcredits () {\n";
-	my $str = print_htmlhead();
-	$str .= print_credits();
-        $str .= "<form><input type='submit' value='close window' onclick='window.close(); return false;'></form>"; 	
-        $str .= "</div></body></html>";	
-	$str =~ s/"/\\"/g;
-	my @arr = split /\n/, $str;
-        $HTML .= "contents=\"$arr[0]\"" . ';';
-        $HTML .= $_ for map{"\ncontents+= \"$arr[$_]\";"} 1 .. $#arr;
-        $HTML .= <<'END_OF_HTML';
- 
-Win1=window.open( '' , 'Window1' , 'location=yes,toolbar=yes,menubar=yes,directories=yes,status=yes,resizable=yes,scrollbars=yes'); 
-Win1.moveTo(0,0);
-Win1.resizeTo(screen.width,screen.height);
-Win1.document.writeln(contents);
-Win1.document.close();
-	}	    
-	//--></SCRIPT>
-END_OF_HTML
-
-	return $HTML;
-  }
-
-sub highlight {
-
- %colors = @_;
- die Dumper \%colors; 
- $highlight = 1;
-
-}
-
 sub links {
 
-	my $type = shift;
-	my $value = shift;
+	my ($type, $value, $link) = @_;
 
 	return $value unless $link_switch;
 
 	if ($type eq "cpan") {
-
-		return qq~ <a href="http://search.cpan.org/perldoc?$value" title="Click here to see $value on CPAN [Opens in a new window]" target="_blank">$value</a> ~;
-
+	  if ($link) {
+	    if (ref $link eq 'ARRAY') {
+	      foreach (@$link) {
+	        if ($_->[0] eq 'all' or lc $value =~ $_->[0]) {
+		  return '<a href=' . $_->[1] . $value .
+                                qq~ title="Click here to see $value documentation [Opens in a new window]"
+                                target="_blank">$value</a> ~		  
+		}
+	      }	
+	    }
+            elsif ($link->[0] eq 'all' or lc $value =~ $link->[0]) {
+			return '<a href=' . $link->[1] . $value .  
+				qq~ title="Click here to see $value documentation [Opens in a new window]" 
+				target="_blank">$value</a> ~
+ 	    }
+          }
+		return qq~ <a href="http://search.cpan.org/perldoc?$value" 
+		title="Click here to see $value on CPAN [Opens in a new window]" target="_blank">$value</a> ~;
 	}
 	elsif ($type eq "ora") {
 		if ($value eq "camel1") {
@@ -467,4 +466,94 @@ sub links {
 		return qq~ <a href="$value">$value</a> ~;
 	}
 }
-1;  
+1; 
+__END__
+=pod
+
+=head1 NAME
+
+HTML::Perlinfo::HTML - HTML documentation for the perlinfo library
+
+=head1 SUMMARY
+
+Since the perlinfo library uses this file for HTML, the HTML documentation resides here. 
+
+=head1 CUSTOMIZING THE HTML
+
+You can capture the HTML output by assigning it to a scalar. Then you can alter the HTML before printing it or doing something else with it. Here is an example that uses the perlinfo function from HTML::Perlinfo:  
+
+       use HTML::Perlinfo;
+
+       my $example = perlinfo();    # Now I can do whatever I want with $example
+       $example =~ s/Perl/Java/ig;  # Make everyone laugh  
+       print $example;       
+
+Another option is to use object methods which make altering some HTML elements less helter skelter. 
+
+=head2 OBJECT METHODS
+
+These object methods allow you to change the HTML CSS settings to achieve a stylish effect. When using them, you must pass them a parameter. Please see your favorite HTML guide for acceptable CSS values. Refer to the HTML source code of the page for the defaults.
+
+Method name/Corresponding CSS element
+
+ title                  / page title (only non-CSS element)
+ bg_image 		/ background_image
+ bg_position 		/ background_position
+ bg_repeat 		/ background_repeat
+ bg_attribute 		/ background_attribute 
+ bg_color 		/ background_color
+ ft_family 		/ font_familty 
+ ft_color 		/ font_color
+ lk_color 		/ link color
+ lk_decoration 		/ link text-decoration  
+ lk_bgcolor 		/ link background-color 
+ lk_hvdecoration 	/ link hover text-decoration 
+ header_bgcolor 	/ table header background-color 
+ header_ftcolor 	/ table header font color
+ leftcol_bgcolor	/ background-color of leftmost table cell  
+ leftcol_ftcolor 	/ font color of left table cell
+ rightcol_bgcolor	/ background-color of right table cell  
+ rightcol_ftcolor	/ font color of right table cell
+
+=head1 EXAMPLES
+
+        $p = HTML::Perlinfo->new();
+	$p->bg_color("#eae5c8");
+	$p->info_all;
+
+        $p = HTML::Perlinfo::Modules->new();
+        $p->bg_color("pink");
+        $p->print_modules;
+
+	# You can also set the CSS values in the constructor!
+    	$p = HTML::Perlinfo->new(
+		bg_image  => 'http://www.tropic.org.uk/~edward/ctrip/images/camel.gif',
+		bg_repeat => 'yes-repeat'
+	);
+	$p->info_all;
+
+=head1 no_links
+
+To remove all the default links and images, you can use the no_links method. 
+
+       $p->no_links;
+       $p->info_all; # contains no images or links. Good for printing!
+
+There are many links (mostly to module documentation) and even a few images of camels. Perlinfo will also detect if the client and server are the same machine and provide links to the local location of a module. This is useful if you want to see the local installation directory of a module in your browser. 
+
+=head1 NOTES
+
+L<HTML::Perlinfo::Modules> allows you to color code specific modules. 
+
+More HTML options will be available in future revisions.
+
+=head1 AUTHOR
+
+Mike Accardo <mikeaccardo@yahoo.com>
+
+=head1 COPYRIGHT
+
+   Copyright (c) 2006, Mike Accardo. All Rights Reserved.
+
+=cut
+

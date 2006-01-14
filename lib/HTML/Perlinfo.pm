@@ -1,33 +1,34 @@
 package HTML::Perlinfo;
 
-use App::Info::HTTPD::Apache;
+# core modules
 use CGI::Carp 'fatalsToBrowser';
 use CGI qw(header);
 use Config qw(%Config config_sh);
 use Net::Domain qw(hostname);
 use Carp (); 
-use Data::Dumper;
-use Module::CoreList;
-use File::Find;
 use File::Spec;
 use IO::Socket;
-use File::Which;
 use POSIX qw(uname);
- 
-require Exporter;
-require HTML::Perlinfo::HTML; 
-require HTML::Perlinfo::Credits;
+
+# non-core
+use App::Info::HTTPD::Apache;
+use Module::CoreList;
+use File::Which;
+use HTML::Perlinfo::Modules; 
+use HTML::Perlinfo::Credits;
+use HTML::Perlinfo::HTML;
+use base 'Exporter';
+our @EXPORT = qw(perlinfo);
+#use Data::Dumper;
 require HTML::Perlinfo::Config;
 require HTML::Perlinfo::General;
 require HTML::Perlinfo::Variables;
 require HTML::Perlinfo::Apache;
-require HTML::Perlinfo::Modules;
 require HTML::Perlinfo::License;
 
-our @ISA    = qw(Exporter);
-our @EXPORT = qw(perlinfo);
+#die Data::Dumper::Dumper \%HTML::Perlinfo::;
 
-$VERSION = '1.05';
+$VERSION = '1.25';
 
 # This is for modperl
 initialize_globals();
@@ -35,6 +36,7 @@ initialize_globals();
   sub print_perl_info {
 
 	  $flag = $_[0];
+ 	  my $m = HTML::Perlinfo::Modules->new();
 	  my $HTML = print_htmlhead();
 	  $HTML .= print_script()    if  ($flag eq "INFO_ALL");
 	  $HTML .= print_credits()   if  ($flag eq "INFO_CREDITS");
@@ -42,12 +44,13 @@ initialize_globals();
 	  $HTML .= print_httpd()     if  ($flag eq "INFO_APACHE");
 	  $HTML .= print_general()   if  ($flag eq "INFO_ALL"  || $flag eq "INFO_GENERAL");
 	  $HTML .= print_variables() if  ($flag eq "INFO_ALL"  || $flag eq "INFO_VARIABLES");
-          $HTML .= print_modules()   if  ($flag eq "INFO_ALL"  || $flag eq "INFO_MODULES");
+	  $HTML .= $m->print_modules( show=>'core' ) if $flag eq "INFO_ALL";
+	  $HTML .= $m->print_modules( show=>'all' )  if $flag eq "INFO_MODULES";
           $HTML .= print_license()   if  ($flag eq "INFO_ALL"  || $flag eq "INFO_LICENSE");
 	  $HTML .= "</div></body></html>";
 	  return $HTML;
   }
-
+  
   #Output a page of useful information about Perl and the current request 
 
   sub perlinfo { 
@@ -108,6 +111,7 @@ Apache HTTP server information.
 =item INFO_MODULES 
 
 All installed modules, their version number and more. INFO_ALL shows only core modules.
+Please also see L<HTML::Perlinfo::Modules>.
 
 =item INFO_LICENSE 
 
@@ -125,83 +129,9 @@ Shows all of the above. This is the default value.
 
 =head1 CUSTOMIZING THE HTML
 
-The simpliest way to alter the HTML is to assign it to a scalar. For example:
+You can capture the HTML output and manipulate it or you can alter CSS elements with object methods.
 
-       my $example = perlinfo();    # Now I can do whatever I want with $example
-       $example =~ s/Perl/Java/ig;  # Make everyone laugh  
-       print $example;       
-
-HTML::Perlinfo also provides object methods which make altering some HTML elements less helter skelter.  
-
-=head1 OBJECT METHODS
-
-These object methods allow you to change the HTML CSS settings to achieve a stylish effect. When using them, you must pass them a parameter. Please see your favorite HTML guide for acceptable CSS values. Refer to the HTML source code of perlinfo for the defaults.
-
-Method name/Corresponding CSS element
-
- title                  / page title (only non-CSS element)
- bg_image 		/ background_image
- bg_position 		/ background_position
- bg_repeat 		/ background_repeat
- bg_attribute 		/ background_attribute 
- bg_color 		/ background_color
- ft_family 		/ font_familty 
- ft_color 		/ font_color
- lk_color 		/ link color
- lk_decoration 		/ link text-decoration  
- lk_bgcolor 		/ link background-color 
- lk_hvdecoration 	/ link hover text-decoration 
- header_bgcolor 	/ table header background-color 
- header_ftcolor 	/ table header font color
- leftcol_bgcolor	/ background-color of leftmost table cell  
- leftcol_ftcolor 	/ font color of left table cell
- rightcol_bgcolor	/ background-color of right table cell  
- rightcol_ftcolor	/ font color of right table cell
-
-=head1 EXAMPLES
-
-Function-oriented style:
-
-	# Show all information, defaults to INFO_ALL
-	perlinfo();
-
-	# Show only module information. This shows all installed modules.
-	perlinfo(INFO_MODULES);
-
-Object-oriented style:
-
-	$p = new HTML::Perlinfo;
-	$p->bg_color("#eae5c8");
-	$p->info_all;
-
-	# You can also set the CSS values in the constructor!
-    	$p = HTML::Perlinfo->new(
-		bg_image  => 'http://www.tropic.org.uk/~edward/ctrip/images/camel.gif',
-		bg_repeat => 'yes-repeat'
-	);
-	$p->info_all;
-
-More examples . . .
-
-	# This is wrong (no capitals!)
-	$p->INFO_CREDITS;
-
-	# But this is correct
-	perlinfo(INFO_CREDITS);
-	
-	# Ditto
-	$p->info_credits;
-
-=head1 no_links
-
-To remove all the default links and images, you can use the no_links method. 
-
-       $p->no_links;
-       $p->info_all; # contains no images or links. Good for printing!
-
-There are many links (mostly to module documentation) and a few images of camels in the default function. HTML::Perinfo will also detect if the client and server are the same machine and provide links to the local location of a module. This is useful if you want to see the local installation directory of a module in your browser. 
-
-More functions for altering the HTML in exciting ways will come in future versions.
+For further details and examples, please see the L<HTML documentation|HTML::Perlinfo::HTML> in the HTML::Perlinfo distribution.
 
 =head1 SECURITY
 
@@ -221,11 +151,6 @@ L<File::Which> (for searching the path)
 
 Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first in the PHP namespace as PHP::Perlinfo, which is no longer available on CPAN.   
 
-=head1 RELEASE SCHEDULE
-
-Every month or so, there will be a new version. Version numbers will increase by 0.05 to reflect the large amount of changes
- expected with each release. Emergency releases will bump the version by 0.01.
-
 =head1 BUGS
 
 Please report any bugs or feature requests to C<bug-html-perlinfo@rt.cpan.org>, or through the web interface at
@@ -244,7 +169,9 @@ Other modules worth mentioning:
 
 L<Config>. You can also use "perl -V" to see a configuration summary at the command-line.
 
-L<Apache::Status>, L<App::Info>, L<Probe::Perl>, L<Module::CoreList>, L<Module::Info>, among others. 
+L<Apache::Status>, L<App::Info>, L<Probe::Perl>, L<Module::CoreList>, L<Module::Info>, among others.
+
+Also included in the Perlinfo distribution: L<HTML::Perlinfo::Modules> 
 
 =head1 AUTHOR
 
@@ -252,7 +179,7 @@ Mike Accardo <mikeaccardo@yahoo.com>
 
 =head1 COPYRIGHT
 
-   Copyright (c) 2005, Mike Accardo. All Rights Reserved.
+   Copyright (c) 2006, Mike Accardo. All Rights Reserved.
  This module is free software. It may be used, redistributed
 and/or modified under the terms of the Perl Artistic License.
 

@@ -1,6 +1,6 @@
 sub print_config {
 
-	return join '',	SECTION("Perl Core"),
+	return join '',	print_section("Perl Core"),
 			print_table_start(),
 			print_table_header(2, "Variable", "Value"),
 			print_config_sh(),

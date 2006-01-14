@@ -19,7 +19,7 @@
 
   sub print_variables {
 
-	return join '', SECTION("Environment Variables"),
+	return join '', print_section("Environment Variables"),
 		  	print_table_start(),
 		  	print_table_header(2, "Variable", "Value"),
 		  	((defined($ENV{'SERVER_SOFTWARE'})) ?  perl_print_gpcse_array("_SERVER") : perl_print_gpcse_array("_ENV",)),

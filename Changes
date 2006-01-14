@@ -1,5 +1,17 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+Updates will occur every month or so. No dates are provided.
+
+1.25    Changes:
+	- Added HTML::Perlinfo::Modules version 1.0. This is the most significant change. 
+	- Moved the HTML docs to HTML::Perlinfo::HTML.
+	- Made HTML::Perlinfo::Credits and HTML::Perlinfo::HTML internal modules
+	- Removed Data-Dumper  
+	- Updated docs
+
+        Bug fixes:
+	- Fixed Apache version reporting
+	- Fixed failure to show more than 2 duplicate modules 
 
 1.05    - Cleaned up some code that caused a few warnings in Config.pm and Perlinfo.pm 
 	- Moved links to a new links sub. Added no_links method.

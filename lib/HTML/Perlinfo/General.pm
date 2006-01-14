@@ -25,7 +25,7 @@
   
   sub ORA {
 
-          return 0 unless $link_switch;
+          return 0 unless $HTML::Perlinfo::HTML::link_switch;
 
 	  local($^W) = 0;
 	  my $sock = IO::Socket::INET->new(	PeerAddr  => 'perl.oreilly.com',  
@@ -105,15 +105,14 @@
 
 		  if ($flag eq "INFO_ALL") { 
 			$HTML .= print_hr();
-
-			if ($link_switch) {
+			if ($HTML::Perlinfo::HTML::link_switch) {
 				$HTML .=<<'END_OF_HTML';
 				<h1>
-				<SCRIPT LANGUAGE="JavaScript">
+				<script type="text/javascript" language="JavaScript">
 				<!--
 				document.write("<a onclick=\"showcredits();\" href=\"javascript:void(0);\">Perl Credits</a>");
 				//-->
-				</SCRIPT>
+				</script>
 				<noscript>Enable JavaScript to see the credits. Alternatively you can use perlinfo(INFO_CREDITS). 
 				</noscript>
 				</h1>
@@ -123,7 +122,7 @@ END_OF_HTML
 			$HTML .= "<h1>Configuration</h1>\n";
 			$HTML .= print_config(); 
 
-			$HTML .= join '', SECTION("Perl utilities"),
+			$HTML .= join '', print_section("Perl utilities"),
 				print_table_start(),
 				print_table_header(2, "Name", "Location"),
 				print_table_row(2, links('cpan', 'h2ph'), check_path("h2ph")),
@@ -138,7 +137,7 @@ END_OF_HTML
 				print_table_row(2, links('cpan', 'podselect'), check_path("podselect")),
 				print_table_end(),
 
-				SECTION("Mail"),
+				print_section("Mail"),
 				print_table_start(),
 				print_table_row(2, 'SMTP', hostname()),
 				print_table_row(2, 'sendmail_path', which("sendmail")),
@@ -147,7 +146,7 @@ END_OF_HTML
 
 				print_httpd(),
 
-				SECTION("HTTP Headers Information"),
+				print_section("HTTP Headers Information"),
 				print_table_start(),
 				print_table_colspan_header(2, "HTTP Request Headers");
 			if  (defined($ENV{'SERVER_SOFTWARE'})) {

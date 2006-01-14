@@ -1,5 +1,5 @@
 # Before `make install' is performed this script should be runnable with
-# `make test'. After `make install' it should work as `perl PHP-Perlinfo.t'
+# `make test'. After `make install' it should work as `perl HTML-Perlinfo.t'
 
 #########################
 
@@ -17,7 +17,6 @@ ok ( test(MODULES) );
 ok ( test(CREDITS) );
 ok ( test(LICENSE) );
 
-
 sub test {
 
 my $html;
@@ -30,3 +29,4 @@ $p = new HTML::Perlinfo;
         die $@ if $@;
         return 1;
 }
+

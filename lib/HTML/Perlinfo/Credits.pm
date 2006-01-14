@@ -1,4 +1,37 @@
-  sub print_credits {
+package HTML::Perlinfo::Credits;
+
+use base qw(Exporter);
+our @EXPORT = qw(print_credits print_script);
+
+use HTML::Perlinfo::HTML;
+
+sub print_script {
+
+        my $HTML =  "<script type=\"text/javascript\" language=\"JavaScript\">\n<!--\n function showcredits () {\n";
+        my $str = print_htmlhead();
+        $str .= print_credits();
+        $str .= "<form><input type='submit' value='close window' onclick='window.close(); return false;'></form>";
+        $str .= "</div></body></html>";
+        $str =~ s/"/\\"/g;
+        my @arr = split /\n/, $str;
+        $HTML .= "contents=\"$arr[0]\"" . ';';
+        $HTML .= $_ for map{"\ncontents+= \"$arr[$_]\";"} 1 .. $#arr;
+        $HTML .= <<'END_OF_HTML';
+
+Win1=window.open( '' , 'Window1' , 'location=yes,toolbar=yes,menubar=yes,directories=yes,status=yes,resizable=yes,scrollbars=yes');
+Win1.moveTo(0,0);
+Win1.resizeTo(screen.width,screen.height);
+Win1.document.writeln(contents);
+Win1.document.close();
+        }
+        //--></SCRIPT>
+END_OF_HTML
+
+        return $HTML;
+  }
+
+
+sub print_credits {
 	 
 	        return join '',  "<h1>Perl Credits</h1>\n", 
 		# The Holy Keepers of the Pumpkin    
@@ -10,7 +43,7 @@
 
 		# Design & Concept 
 		print_table_start(),
-		print_table_header(1, "Language Design &amp, Concept"),
+		print_table_header(1, "Language Design &amp; Concept"),
 		print_table_row(1, "Larry Wall"),
 		print_table_end(),
 
