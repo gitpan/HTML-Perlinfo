@@ -1,35 +1,8 @@
 package HTML::Perlinfo::Credits;
-
 use base qw(Exporter);
-our @EXPORT = qw(print_credits print_script);
+our @EXPORT = qw(print_credits);
 
-use HTML::Perlinfo::HTML;
-
-sub print_script {
-
-        my $HTML =  "<script type=\"text/javascript\" language=\"JavaScript\">\n<!--\n function showcredits () {\n";
-        my $str = print_htmlhead();
-        $str .= print_credits();
-        $str .= "<form><input type='submit' value='close window' onclick='window.close(); return false;'></form>";
-        $str .= "</div></body></html>";
-        $str =~ s/"/\\"/g;
-        my @arr = split /\n/, $str;
-        $HTML .= "contents=\"$arr[0]\"" . ';';
-        $HTML .= $_ for map{"\ncontents+= \"$arr[$_]\";"} 1 .. $#arr;
-        $HTML .= <<'END_OF_HTML';
-
-Win1=window.open( '' , 'Window1' , 'location=yes,toolbar=yes,menubar=yes,directories=yes,status=yes,resizable=yes,scrollbars=yes');
-Win1.moveTo(0,0);
-Win1.resizeTo(screen.width,screen.height);
-Win1.document.writeln(contents);
-Win1.document.close();
-        }
-        //--></SCRIPT>
-END_OF_HTML
-
-        return $HTML;
-  }
-
+use HTML::Perlinfo::Common;
 
 sub print_credits {
 	 

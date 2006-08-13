@@ -1,19 +1,39 @@
 Revision history for Perl extension HTML::Perlinfo 
 
-Updates will occur every month or so. No dates are provided.
+1.40 Changes:
+	- Major reorganization of code. 
+        	* Added Base.pm to handle info methods
+        	* CSS methods removed. They can only be changed in the constructor now.
+		* Transplanted pod from HTML::Perlinfo::HTML into HTML::Perlinfo::HTML.pod. 
+		* Renamed HTML::Perlinfo::HTML.pm to HTML::Perinfo::Common.pm
+		* Various pod updates to HTML::Perlinfo::Modules and HTML.pod
+		* Removed info_modules test and created separate test for HTML::Perlinfo::Modules
+		* Turned HTML::Perlinfo::Apache into an internal module 
+		* Various improvements to Apache detection
+    		* mod_perl version is now listed in info_all and info_apache
+		* Removed no_links method and added universal links parameter
+    		* Added header and full_page attributes
+	- HTML::Perlinfo::Modules: 
+        	* Renamed named parameters 'show' and 'sort' to 'from' and 'sort_by' respectively.
+        	* The form parameter only accepts a directory or an array ref
+        	* Created the show_only, show_inc, show_dir, and section parameters
+        	* Improved the directory listing in the search summary
+	Bug fixes:
+		* Default links to the local file system have been removed. The links attribute can now turn them on. 
 
-1.25    Changes:
+1.25 Changes:
 	- Added HTML::Perlinfo::Modules version 1.0. This is the most significant change. 
 	- Moved the HTML docs to HTML::Perlinfo::HTML.
 	- Made HTML::Perlinfo::Credits and HTML::Perlinfo::HTML internal modules
 	- Removed Data-Dumper  
 	- Updated docs
 
-        Bug fixes:
+     Bug fixes:
 	- Fixed Apache version reporting
 	- Fixed failure to show more than 2 duplicate modules 
 
-1.05    - Cleaned up some code that caused a few warnings in Config.pm and Perlinfo.pm 
+1.05    
+    - Cleaned up some code that caused a few warnings in Config.pm and Perlinfo.pm 
 	- Moved links to a new links sub. Added no_links method.
 	- Added title method. Cleaned up some css code
 	- Added variable extraction for Apache version

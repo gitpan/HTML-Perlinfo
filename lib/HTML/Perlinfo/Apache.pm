@@ -1,52 +1,88 @@
-sub print_httpd {
+package HTML::Perlinfo::Apache;
 
-        return join '', print_section("apache"), 
-			print_table_start(), 
-			print_apache(), 
-			print_table_end(),
-	
-			print_section("Apache Environment"), 
-			print_table_start(), 
-			print_table_header(2, "Variable", "Value"), 
-			print_apache_environment(), 
-			print_table_end();
+use warnings;
+use strict;
+use CGI::Carp 'fatalsToBrowser';
+use HTML::Perlinfo::Common;
+
+use App::Info::HTTPD::Apache;
+my $apache = App::Info::HTTPD::Apache->new();
+
+sub new {
+    my %apache;
+    my $env  = ( $ENV{SERVER_SOFTWARE} || "" ) =~ /apache/i;
+    my $info = App::Info::HTTPD::Apache->new()->installed;
+    my $mp   = exists $ENV{MOD_PERL};
+    $apache{'env'}  = $env;
+    $apache{'info'} = $info;
+    $apache{'mp'}   = $mp;
+    bless \%apache;
 }
 
-sub check_apache {
-
-	return 0 unless (defined($ENV{'SERVER_SOFTWARE'}) && $ENV{'SERVER_SOFTWARE'}=~/apache/i);
-	return 1;
-} 
+sub has {
+    my ( $self, @opts ) = @_;
+		for my $opt (@opts) {
+			return 0 unless $self->{$opt};
+		}
+    return 1;
+}
 
 sub print_apache {
+	
+	my $self = shift;
+        my @mods;
+	my  ($version, $user, $group, $root, $hostname, $port, $mp_status) = ("<i>Not detected</i>") x 7;
 
-	return unless (check_apache());
-
-	my  ($version, $user, $group, $root, @mods) = ("<i>Not detected</i>") x 5;
-	my $apache = App::Info::HTTPD::Apache->new;
-	if ($apache->installed) {
-		$version = $apache->version; 
-		$user  =  $apache->user;
-		$group =  $apache->group;
-		$root  =  $apache->httpd_root;
-		@mods  =  $apache->static_mods;
+	$mp_status = 'enabled' if $self->has qw(mp);
+	if ($self->has qw(info)) {
+		$version =  $apache->version     if defined $apache->version; 
+		$user    =  $apache->user        if defined $apache->user;
+		$group   =  $apache->group       if defined $apache->group;
+		$root    =  $apache->httpd_root  if defined $apache->httpd_root;
+                $port    =  $apache->port        if defined $apache->port;
+		@mods    =  $apache->static_mods if defined $apache->static_mods;
 	} 
 	else {
-		($version) = $ENV{'SERVER_SOFTWARE'} =~ /(\d+[\.\d]*)/; 
+	
+	  ($version) = $ENV{'SERVER_SOFTWARE'} =~ /(\d+[\.\d]*)/ 
+				if (defined $ENV{'SERVER_SOFTWARE'} && $ENV{'SERVER_SOFTWARE'} =~ /\d+[\.\d]*/); 
 	}  
-
 	return join '', print_table_row(2, "Apache Version", "$version"),
-			print_table_row(2, "Hostname:Port", "$ENV{'SERVER_NAME'}:$ENV{'SERVER_PORT'}"),
+                        (defined($ENV{'SERVER_NAME'}) && defined($ENV{'SERVER_PORT'})) ?
+			print_table_row(2, "Hostname:Port", "$ENV{'SERVER_NAME'} : $ENV{'SERVER_PORT'}"):
+      			print_table_row(2, "Hostname:Port", "$hostname : $port"),
 			print_table_row(2, "User/Group", "$user / $group"),
 			print_table_row(2, "Server Root", "$root"),
-			($apache->installed) ?
+			($self->has qw(info) && defined $apache->static_mods) ?
 			print_table_row(2, "Loaded Modules", "@mods"):
-			print_table_row(2, "Loaded Modules", "<i>Not detected</i>");
+			print_table_row(2, "Loaded Modules", "<i>Not detected</i>"),
+			print_table_row(2, "mod_perl", "$mp_status");
+}
+
+sub print_modperl {
+
+	my ($version_status, $version_number) = ("<i>Not detected</i>") x 3;
+
+	  $version_status = '1.0';
+          $version_status = '2.0 or higher' if $ENV{MOD_PERL_API_VERSION} && $ENV{MOD_PERL_API_VERSION} == 2;
+          ($version_number) = $ENV{MOD_PERL} =~ /^\S+\/(\d+(?:[\.\_]\d+)+)/;
+	  $version_number =~ s/_//g;
+          $version_number =~ s/(\.[^.]+)\./$1/g;
+	  unless ($version_status eq '2.0 or higher') {
+	    if ( $version_number >= 1.9901 ) {
+                 $version_status = '1.9 which is incompatible with 2.0';
+            }
+	  } 	
+	  
+         my $image =  check_images('perl.apache.org') ? add_link('apache') : '';
+	 #my $image =  add_link('apache');
+	 return join '', print_box_start(0), $image, 
+		"Running under mod_perl version $version_status (version number: $version_number)",
+			 print_box_end(); 
+
 }
 
 sub print_apache_environment {
-
-	return unless (check_apache());
 
 	return join '', print_table_row(2, "DOCUMENT_ROOT", "$ENV{'DOCUMENT_ROOT'} "),
 			print_table_row(2, "HTTP_ACCEPT", "$ENV{'HTTP_ACCEPT'} "),

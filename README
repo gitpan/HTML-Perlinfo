@@ -1,4 +1,4 @@
-HTML-Perlinfo version 1.25
+HTML-Perlinfo version 1.40
 =========================
 
 NAME
@@ -25,7 +25,7 @@ App::Info
 Module::CoreList
 
 COPYRIGHT AND LICENCE
-Copyright (C) 2005 Mike Accardo <mikeaccardo@yahoo.com>
+Copyright (C) 2006 Mike Accardo <mikeaccardo@yahoo.com>
 
 This library is free software; you can redistribute it and/or modify it under 
 the same terms as Perl itself. 

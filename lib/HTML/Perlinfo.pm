@@ -1,69 +1,52 @@
 package HTML::Perlinfo;
 
+use lib '/home/maccard/perlmods';
+
 # core modules
 use CGI::Carp 'fatalsToBrowser';
-use CGI qw(header);
-use Config qw(%Config config_sh);
-use Net::Domain qw(hostname);
 use Carp (); 
-use File::Spec;
-use IO::Socket;
-use POSIX qw(uname);
 
 # non-core
-use App::Info::HTTPD::Apache;
-use Module::CoreList;
-use File::Which;
+use HTML::Perlinfo::Apache;
 use HTML::Perlinfo::Modules; 
-use HTML::Perlinfo::Credits;
-use HTML::Perlinfo::HTML;
-use base 'Exporter';
+use HTML::Perlinfo::Common;
+use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
-#use Data::Dumper;
-require HTML::Perlinfo::Config;
-require HTML::Perlinfo::General;
-require HTML::Perlinfo::Variables;
-require HTML::Perlinfo::Apache;
-require HTML::Perlinfo::License;
 
-#die Data::Dumper::Dumper \%HTML::Perlinfo::;
+$VERSION = '1.40';
 
-$VERSION = '1.25';
+# This function is a wrapper for the functional interface
+sub perlinfo {
+  my $info = shift;
+  $info = 'info_all' unless defined $info;
 
-# This is for modperl
-initialize_globals();
-
-  sub print_perl_info {
-
-	  $flag = $_[0];
- 	  my $m = HTML::Perlinfo::Modules->new();
-	  my $HTML = print_htmlhead();
-	  $HTML .= print_script()    if  ($flag eq "INFO_ALL");
-	  $HTML .= print_credits()   if  ($flag eq "INFO_CREDITS");
-	  $HTML .= print_config()    if  ($flag eq "INFO_CONFIG");
-	  $HTML .= print_httpd()     if  ($flag eq "INFO_APACHE");
-	  $HTML .= print_general()   if  ($flag eq "INFO_ALL"  || $flag eq "INFO_GENERAL");
-	  $HTML .= print_variables() if  ($flag eq "INFO_ALL"  || $flag eq "INFO_VARIABLES");
-	  $HTML .= $m->print_modules( show=>'core' ) if $flag eq "INFO_ALL";
-	  $HTML .= $m->print_modules( show=>'all' )  if $flag eq "INFO_MODULES";
-          $HTML .= print_license()   if  ($flag eq "INFO_ALL"  || $flag eq "INFO_LICENSE");
-	  $HTML .= "</div></body></html>";
-	  return $HTML;
-  }
+  error_msg("@_ is an invalid perlinfo() parameter")
+  if (($info !~ /info_all|info_general|info_credits|info_config|info_variables|info_apache|info_modules|info_license/i) || @_ > 1); 
   
-  #Output a page of useful information about Perl and the current request 
+  my $p = HTML::Perlinfo->new();
 
-  sub perlinfo { 
-
-          my $info = shift;
-	  $info = 'INFO_ALL' unless defined $info;
-	  Carp::croak "@_ is an invalid perlinfo() parameter"
-	  if (($info !~ /INFO_ALL|INFO_GENERAL|INFO_CREDITS|INFO_CONFIG|INFO_VARIABLES|INFO_APACHE|INFO_MODULES|INFO_LICENSE/) || @_ > 1); 
-	  # Andale!  Andale!  Yee-Hah! 
-	  my $HTML = defined($ENV{'SERVER_SOFTWARE'}) ? header : '';
-	  $HTML .= print_perl_info($info);
-	  defined wantarray ? return $HTML : print $HTML;
+  if (lc $info eq 'info_all') {
+    $p->info_all;
   }
+  elsif (lc $info eq 'info_general') {
+    $p->info_general;
+  }
+  elsif (lc $info eq 'info_variables') {
+    $p->info_variables;
+  }
+  elsif (lc $info eq 'info_credits') {
+    $p->info_credits;
+  }
+  elsif (lc $info eq 'info_config') {
+    $p->info_config;
+  }
+  elsif (lc $info eq 'info_apache') {
+    $p->info_apache;
+  }
+  else {
+    $p->info_modules;
+  }
+}
 1;
 __END__
 =pod
@@ -106,11 +89,11 @@ All configuration values from config_sh. INFO_ALL shows only some values.
 
 =item INFO_APACHE
 
-Apache HTTP server information.  
+Apache HTTP server information, including mod_perl information.  
 
 =item INFO_MODULES 
 
-All installed modules, their version number and more. INFO_ALL shows only core modules.
+All installed modules, their version number and much more. INFO_ALL shows only core modules.
 Please also see L<HTML::Perlinfo::Modules>.
 
 =item INFO_LICENSE 
@@ -123,33 +106,33 @@ Shows the credits for Perl, listing the Perl pumpkings, developers, module autho
 
 =item INFO_ALL
 
-Shows all of the above. This is the default value.
+Shows all of the above defaults. This is the default value.
 
 =back
 
 =head1 CUSTOMIZING THE HTML
 
-You can capture the HTML output and manipulate it or you can alter CSS elements with object methods.
+You can capture the HTML output and manipulate it or you can alter CSS elements with object attributes.
 
 For further details and examples, please see the L<HTML documentation|HTML::Perlinfo::HTML> in the HTML::Perlinfo distribution.
 
 =head1 SECURITY
 
-Displaying detailed server information on the internet is not a good idea if security is a top concern, as it is for most system administrators, and HTML::Perlinfo reveals a lot of information about the local environment. While restricting what system users can publish online is wise, you can also hinder them from using the module by installing it outside of the usual module directories (see perldoc -q lib). Of course, preventing users from installing the module in their own home directories is another matter entirely. 
+Displaying detailed server information on the internet is not a good idea and HTML::Perlinfo reveals a lot of information about the local environment. While restricting what system users can publish online is wise, you can also hinder them from using the module by installing it outside of the usual module directories (see perldoc -q lib). Of course, preventing users from installing the module in their own home directories is another matter entirely. 
 
 =head1 REQUIREMENTS
 
 HTML::Perlinfo requires only 3 non-core modules. These 3 modules are:
 
-L<App::Info> (for some HTTPD information)
+L<App::Info> - for some HTTPD information
 
-L<Module::CoreList> (for Perl release dates)
+L<Module::CoreList> - for Perl release dates
 
-L<File::Which> (for searching the path)
+L<File::Which> - for searching the path
 
 =head1 NOTES
 
-Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first in the PHP namespace as PHP::Perlinfo, which is no longer available on CPAN.   
+Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
 
 =head1 BUGS
 
