@@ -1,7 +1,5 @@
 package HTML::Perlinfo;
 
-use lib '/home/maccard/perlmods';
-
 # core modules
 use CGI::Carp 'fatalsToBrowser';
 use Carp (); 
@@ -13,7 +11,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.40';
+$VERSION = '1.41';
 
 # This function is a wrapper for the functional interface
 sub perlinfo {
@@ -71,7 +69,7 @@ Since the module outputs HTML, you may want to use it in a CGI script, but you d
 
 =head1 OPTIONS
 
-There are 6 options to pass to the perlinfo funtion. All of these options are also object methods. The key difference is their case: Captilize the option name when passing it to the function and use only lower-case letters when using the object-oriented approach.
+There are 8 options to pass to the perlinfo funtion. All of these options are also object methods. The key difference is their case: Captilize the option name when passing it to the function and use only lower-case letters when using the object-oriented approach.
 
 =over
 

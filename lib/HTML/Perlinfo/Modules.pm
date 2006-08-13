@@ -7,7 +7,7 @@ use Carp ();
 use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 sub module_color_check {
 
@@ -480,7 +480,7 @@ You can also highlight specific modules with different colors.
         # and highlight CGI modules in red and Win32 modules in yellow
 	$m->print_modules(
                 from      => '/usr',
-  		link      => [qr/Apache::/i, 'http://perldoc.dv.valueclick.com/perldoc/'], 
+  		link      => [qr/Apache::/i, 'http://www.myexample.com/perldoc/'], 
                 color     => ['red', qr/CGI::/i, 'CGI modules'],
                 color     => ['yellow', qr/Win32::/i, 'Windoze modules']
          );
@@ -541,7 +541,7 @@ In the second example, the label defaults to '(?i-xsm:CGI)' since there is no th
 
 =head3 section
 
-Ever wanted to call your modules by a petname? Or how about just labeling your company's modules with a header, so you can more quickly discern what you are looking at? The section parameter let's you do that!  
+Ever wanted to call your modules by a petname? Or how about just labeling your company's modules with a heading, so you can more quickly discern what you are looking at? The section parameter lets you do that!  
 
 	$m->print_modules( show_only=>qr/^(?:DBI::|DBD::)|Oracle/i,
                            show_dir=>1,

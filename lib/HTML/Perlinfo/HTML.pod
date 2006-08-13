@@ -18,13 +18,13 @@ You can capture the HTML output by assigning it to a scalar. Then you can alter 
        $example =~ s/Perl/Java/ig;  # Make everyone laugh  
        print $example;       
 
-Another option is to use object methods which make altering some HTML elements less helter skelter. 
+Another option is to use object attributes which make altering some HTML elements less helter skelter. 
 
-=head2 OBJECT ATTRIBUTES
+=head1 OBJECT ATTRIBUTES
 
-These object attributes allow you to change the HTML CSS settings to achieve a stylish effect. When using them, you must pass them a parameter. Please see your favorite HTML guide for acceptable CSS values. Refer to the HTML source code of the page for the defaults.
+These object attributes allow you to change the HTML CSS settings to achieve a stylish effect. Please see your favorite HTML guide for acceptable CSS values. Refer to the HTML source code of the perlinfo page for the defaults.
 
-Method name/Corresponding CSS element
+Attribute name/Corresponding CSS element
 
  title                  / page title (only non-CSS element)
  bg_image 		/ background_image
@@ -45,14 +45,8 @@ Method name/Corresponding CSS element
  rightcol_bgcolor	/ background-color of right table cell  
  rightcol_ftcolor	/ font color of right table cell
 
-=head1 EXAMPLES
+=head2 CSS EXAMPLE
 
-        $p = HTML::Perlinfo::Modules->new( 
-		bg_color => 'blue'
-	);
-        $p->print_modules;
-
-	# You can also set the CSS values in the constructor!
     	$p = HTML::Perlinfo->new(
 		bg_image  => 'http://www.tropic.org.uk/~edward/ctrip/images/camel.gif',
 		bg_repeat => 'yes-repeat'
@@ -67,16 +61,13 @@ You can request a content-type header. But you don't have to, since perlinfo is 
 		    header  => 1   # Change value to 0 to remove the header
 	    );
 
-
 =head1 full_page
 
 Do you want only a fragment of HTML and not a page with body tags (among other things)? Then the full_page option is what you need to use (or a regular expression, as explained above). This option allows you to add your own header/footer if you so desire. By default, the value is 1. Set it to 0 to output the HTML report with as little HTML as possible. 
 
-
     	$p = HTML::Perlinfo->new(
 		    full_page  => 0   # Change value to 1 to get a full HTML page
 	    );
-
 
 =head1 links
 
@@ -98,13 +89,13 @@ The named parameters for the links attribute are 'docs' and 'local' which contro
 
 =item docs
 
-Using 'docs', you can control the display of the default links to module and program documentation on search.cpan.org. But the L<link|HTML::Perlinfo::Modules#link> parameter in L<HTML::Perlinfo::Modules> can override this directive. By overridding 'docs=>0', you can show documentation for certain modules and not show documentation for any others. This is useful, for example, when you have homegrown modules without any documentation but want to show links to documentation for CPAN modules on the same page. Observe:
+Using 'docs', you can control the display of the default links to module and program documentation on search.cpan.org. But the link parameter in L<HTML::Perlinfo::Modules> can override this directive. By overridding 'docs=>0', you can show documentation for certain modules and not show documentation for any others. This is useful, for example, when you have homegrown modules without any documentation but want to show links to documentation for CPAN modules on the same page. Observe:
 
 	$p->print_modules( links => [docs=>0], link => [qr/Apache::/, 'http://www.myexample.com/perldoc/'] );
 
 In the above example, only links to Apache modules would appear. Other modules would not have links to any documentation. Note that had you simply set the value for links to zero, then the other attribute concerning Apache modules would have been irrelevant, since no links whatsoever would have appeared. In other words, you can mix and match these two atttibutes to achieve many different and wonderous effects. Have fun! Be imaginative!  
 
-For more information on L<print_modules|HTML::Perlinfo::Modules#print_modules> and its L<link|HTML::Perlinfo::Modules#link> parameter, please see L<HTML::Perlinfo::Modules>. 
+For more information on print_modules and its link parameter, please see L<HTML::Perlinfo::Modules>. 
 
 =item local
 

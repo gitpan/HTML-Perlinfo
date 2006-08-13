@@ -1,5 +1,8 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.41 Changes:
+	- POD fixes and removal of 'use lib' from Perlinfo.pm
+
 1.40 Changes:
 	- Major reorganization of code. 
         	* Added Base.pm to handle info methods
