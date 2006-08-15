@@ -10,7 +10,7 @@ In the perlinfo library, L<HTML::Perlinfo> and L<HTML::Perlinfo::Modules> use th
 
 =head1 CUSTOMIZING THE HTML
 
-You can capture the HTML output by assigning it to a scalar. Then you can alter the HTML before printing it or doing something else with it. Here is an example that uses the L<perlinfo|HTML::Perlinfo#perlinfo> function from L<HTML::Perlinfo>:  
+You can capture the HTML output by assigning it to a scalar. Then you can alter the HTML before printing it or doing something else with it. Here is an example that uses the perlinfo function from L<HTML::Perlinfo>:  
 
        use HTML::Perlinfo;
 

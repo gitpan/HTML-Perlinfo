@@ -11,7 +11,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.41';
+$VERSION = '1.42';
 
 # This function is a wrapper for the functional interface
 sub perlinfo {

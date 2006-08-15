@@ -7,7 +7,7 @@ use Carp ();
 use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
-$VERSION = '1.02';
+$VERSION = '1.03';
 
 sub module_color_check {
 
@@ -64,9 +64,11 @@ sub sort_modules {
 
 sub html_setup {
  
- my ($self, $show_only, $color_specs, $section) = @_;
+ my ($self, $show_only, $color_specs, $section, $full_page) = @_;
  
  my $HTML;
+
+ $HTML .= $self->print_htmlhead if $full_page; 
 
 if ($show_only eq 'core') {
                 $HTML .= $section ? print_section($section) : print_section("Core Perl modules installed");
@@ -305,7 +307,7 @@ sub check_my_args {
 
   my ($key, $value) = @_;
   my ($message, %allowed);
-  @allowed{qw(from sort_by color link show_only section show_inc show_dir)} = ();
+  @allowed{qw(from sort_by color link show_only section full_page show_inc show_dir)} = ();
 
   if (not exists $allowed{$key}) {
     $message = "$key is an invalid print_modules parameter";
@@ -326,6 +328,9 @@ sub check_my_args {
     $message = "You didn't provide a URL for the $key parameter";
   }
   elsif ($key eq 'show_only' && (ref($value) ne 'Regexp') && lc $value ne 'core') {
+    $message = "$value is an invalid value for the $key parameter";
+  }
+  elsif ($key eq 'full_page' && $value != 0 && $value != 1 ) {
     $message = "$value is an invalid value for the $key parameter";
   }
   elsif ($key eq 'link' && ($value->[0] ne 'all' && $value->[0] != 0 && ref($value->[0]) ne 'Regexp')) {
@@ -362,8 +367,9 @@ sub print_modules {
   my $color_specs = $args->{'color'};
   my $link        = $args->{'link'};
   my $section     = $args->{'section'};
-  my $show_inc    = exists $args->{'show_inc'} ? $args->{'show_inc'} : 1;
-  my $show_dir    = exists $args->{'show_dir'} ? $args->{'show_dir'} : 0;
+  my $full_page   = exists $args->{'full_page'} ? $args->{'full_page'} :  $self->{'full_page'};
+  my $show_inc    = exists $args->{'show_inc'}  ? $args->{'show_inc'} : 1;
+  my $show_dir    = exists $args->{'show_dir'}  ? $args->{'show_dir'} : 0;
  
  
   my ( $overall_total, $total_found_inbase, $mod_version, $base, $eval, $mod_info_line, $start_dir, $mod_name, $new_val, $below_inc, $last_inc_dir );
@@ -372,7 +378,7 @@ sub print_modules {
   # hashes
   my ( %path, %inc_path, %mod_count, %found_mod);
 
-  my $HTML .= html_setup($self, $show_only, $color_specs, $section); 
+  my $HTML .= html_setup($self, $show_only, $color_specs, $section, $full_page); 
 
   # Get ready to search 
   my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
@@ -425,7 +431,7 @@ sub print_modules {
    my @sorted_modules = sort_modules(\%found_mod, $sort_by);
    $HTML .= print_each_module(\@sorted_modules, $show_only, $color_specs, $core_dir1, $core_dir2, $link);      
    $HTML .= print_module_results(\@mod_dir,\%mod_count, $from, $overall_total, $show_dir) if $show_inc;
-   #$HTML .= "</div></body></html>" unless ((caller)[0] eq 'HTML::Perlinfo::General' || !$self->{full_page} || !$full_page);
+   $HTML .= "</div></body></html>" if $full_page; 
 
    defined wantarray ? return $HTML : print $HTML;
 
@@ -551,6 +557,19 @@ Ever wanted to call your modules by a petname? Or how about just labeling your c
                            show_dir=>1,
                            section=>'Apache/mod_perl modules');
 
+=head3 full_page
+
+Do you want only a fragment of HTML and not a page with body tags (among other things)? Then the full_page option is what you need to use (or a regular expression, as explained in the L<HTML documentation|HTML::Perlinfo::HTML>). This option allows you to add your own header/footer if you so desire. By default, the value is 1. Set it to 0 to output the HTML report with as little HTML as possible. 
+
+    	$m = HTML::Perlinfo::Modules->new(
+		    full_page  => 0   # Change value to 1 to get a full HTML page
+	    );
+	$m->print_modules; # You will still get an HTML page but without CSS settings or body tags
+
+	$m->print_modules( full_page => 1); # Now you will get the complete, default HTML page. 
+
+Note that the full_page option can be set in either the constructor or the method call. The advantage of setting it in the constructor is that every subsequent method call will have this attribute. (There is no limit to how many times you can call print_modules in a program. If calling the method more than once makes no sense to you, then you need to look at the show_only and from options.) If you set the full_page in the print_modules method, you will override its value in the object.     
+
 =head3 link
 
 By default, every module is linked to its documentation on search.cpan.org. However some modules, such as custom modules, would not be in CPAN and their link would not show any documentation. With the 'link' parameter you can override the CPAN link with you own URL.  
@@ -565,7 +584,7 @@ Further information about linking is in the L<HTML documentation|HTML::Perlinfo:
 
 HTML::Perlinfo::Modules uses the same HTML generation as its parent module, HTML::Perlinfo. 
 
-You can capture the HTML output and manipulate it or you can alter CSS elements with object methods. 
+You can capture the HTML output and manipulate it or you can alter CSS elements with object attributes. 
 
 (Note that you can also highlight certain modules with the color parameter to print_modules.)
 

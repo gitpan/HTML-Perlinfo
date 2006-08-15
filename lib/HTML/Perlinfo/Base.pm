@@ -83,9 +83,9 @@ sub info_modules {
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
   my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
-  $html .= $self->print_htmlhead() if $self->{'full_page'} && (caller)[0] ne 'HTML::Perlinfo::General';
+  $html .= $self->print_htmlhead() if $self->{'full_page'};
   $html .= print_thesemodules('all');
-  $html .= "</div></body></html>"  if $self->{'full_page'} && (caller)[0] ne 'HTML::Perlinfo::General';
+  $html .= "</div></body></html>"  if $self->{'full_page'};
   defined wantarray ? return $html : print $html;
 }
 sub info_credits {

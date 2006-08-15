@@ -1,5 +1,10 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.42 Bug fixes:
+	- HTML::Perlinfo::Modules:
+		* Major bug fix: print_modules was printing pages with full_page set to 0. 
+		  So added full_page option to print_modules. This option was mistakenly left out. 
+
 1.41 Changes:
 	- POD fixes and removal of 'use lib' from Perlinfo.pm
 
