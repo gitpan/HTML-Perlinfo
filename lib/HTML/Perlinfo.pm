@@ -11,34 +11,35 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.42';
+$VERSION = '1.43';
 
-# This function is a wrapper for the functional interface
+# This function is a OO wrapper for the functional interface
 sub perlinfo {
   my $info = shift;
   $info = 'info_all' unless defined $info;
+  $info = uc $info;
 
   error_msg("@_ is an invalid perlinfo() parameter")
-  if (($info !~ /info_all|info_general|info_credits|info_config|info_variables|info_apache|info_modules|info_license/i) || @_ > 1); 
-  
-  my $p = HTML::Perlinfo->new();
+  if (($info !~ /INFO_ALL|INFO_GENERAL|INFO_CREDITS|INFO_CONFIG|INFO_VARIABLES|INFO_APACHE|INFO_MODULES|INFO_LICENSE/) || @_ > 1); 
+ 
+  my $p = HTML::Perlinfo->new( 'title' => "perlinfo($info)");
 
-  if (lc $info eq 'info_all') {
+  if ($info eq 'INFO_ALL') {
     $p->info_all;
   }
-  elsif (lc $info eq 'info_general') {
+  elsif ($info eq 'INFO_GENERAL') {
     $p->info_general;
   }
-  elsif (lc $info eq 'info_variables') {
+  elsif ($info eq 'INFO_VARIABLES') {
     $p->info_variables;
   }
-  elsif (lc $info eq 'info_credits') {
+  elsif ($info eq 'INFO_CREDITS') {
     $p->info_credits;
   }
-  elsif (lc $info eq 'info_config') {
+  elsif ($info eq 'INFO_CONFIG') {
     $p->info_config;
   }
-  elsif (lc $info eq 'info_apache') {
+  elsif ($info eq 'INFO_APACHE') {
     $p->info_apache;
   }
   else {
@@ -65,7 +66,9 @@ This module outputs a large amount of information about your Perl installation i
 
 HTML::Perlinfo is aimed at Web developers, but almost anyone using Perl may find it useful.
 
-Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line.  
+Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. 
+
+If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
 
 =head1 OPTIONS
 

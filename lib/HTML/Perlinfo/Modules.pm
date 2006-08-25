@@ -7,8 +7,17 @@ use Carp ();
 use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
-$VERSION = '1.03';
 
+$VERSION = '1.04';
+
+sub new {
+
+    my ($class, %params) = @_;
+    $params{'title'} = exists $params{'title'} ?  $params{'title'} : 'Perl Modules';
+
+    $class->SUPER::new(%params);
+
+}
 sub module_color_check {
 
 	my ($module_name, $color_specs) = @_;
@@ -66,37 +75,31 @@ sub html_setup {
  
  my ($self, $show_only, $color_specs, $section, $full_page) = @_;
  
- my $HTML;
+ my $html;
 
- $HTML .= $self->print_htmlhead if $full_page; 
+ $html .= $self->print_htmlhead if $full_page; 
 
 if ($show_only eq 'core') {
-                $HTML .= $section ? print_section($section) : print_section("Core Perl modules installed");
-                $HTML .= print_table_start();
-                $HTML .= print_table_header(3, "Module name", "Version", "Location");
+                $html .= $section ? print_section($section) : print_section("Core Perl modules installed");
+                $html .= print_table_start();
+                $html .= print_table_header(3, "Module name", "Version", "Location");
  }
-#elsif ($from eq 'all') {
-#               $HTML .= $section ? print_section($section) : print_section("All Perl modules installed");
-#		$HTML .= print_color_codes($color_specs) if $color_specs;
-#                $HTML .= print_table_start();
-#                $HTML .= print_table_header(4, "Module name", "Version", "Core", "Location");
-# }
  else {
-	        $HTML .= $section ? print_section($section) : '';
-                $HTML .= print_color_codes($color_specs) if $color_specs;
-                $HTML .= print_table_start();
-                $HTML .= print_table_header(4, "Module name", "Version", "Core", "Location");
+	        $html .= $section ? print_section($section) : '';
+                $html .= print_color_codes($color_specs) if $color_specs;
+                $html .= print_table_start();
+                $html .= print_table_header(4, "Module name", "Version", "Core", "Location");
  }
 
-return $HTML;
+return $html;
 
 }
 
 sub module_info {
    my ($module_path, $show_only) = @_;
    my ($mod_name, $mod_version, @mod_info);
+   open(MOD, $module_path) or return 0; 
    no warnings 'all'; # silence warnings
-   open(MOD, $module_path) or return 0; # Be nice. Someone might want to keep things private
    my $inpod = 0;
     while (<MOD>) {
       if (/^ *package +(\S+);/) {       # This is not fool proof and even fails one of the perlinfo modules!
@@ -343,18 +346,38 @@ sub search_dir {
 
   my ($from, $show_only, $core_dir1, $core_dir2) = @_;
 
-  my %seen;
+  my %seen = ();
 
-  my @mod_dir = (ref($from) eq 'ARRAY') && $show_only ne 'core' ? @{$from} :
+  my @user_dir = (ref($from) eq 'ARRAY') && $show_only ne 'core' ? @{$from} :
                 ($show_only eq 'core')  ? ($core_dir1, $core_dir2) : $from;
 
   # Make sure only unique entries and readable directories in @mod_dir
-  @mod_dir = grep { -d $_ && -r $_ && !$seen{$_}++ } map {File::Spec->canonpath($_)}@mod_dir;
+  my @mod_dir = grep { -d $_ && -r $_ && !$seen{$_}++ } map {File::Spec->canonpath($_)}@user_dir;
+  if (@mod_dir != @user_dir) {
+  # Looks like there might have been a problem with the directories given to us.
+  # Or maybe not. @user_dir could have duplicate values and that's ok.
+  # But let's still warn about any unreadable or non-directories given 
+	%seen = ();
+	@user_dir = grep { !$seen{$_}++ } map {File::Spec->canonpath($_)}@user_dir;
+	if (@user_dir > @mod_dir) {
+        #%seen = map {$_ => undef} @mod_dir;
+        %seen = ();
+        @seen{@mod_dir} = ();
+		my @difference = grep { !$seen{$_}++ }@user_dir;
+		foreach $element (@difference) {
+			if (! -d $element) {
+				warn "$element is not a directory";
+			} 
+			elsif (! -r $element) {
+				warn "$element is not a readable directory";
+			}
+		}
+	}
+  }
 
   error_msg("Search directories are invalid") unless @mod_dir >= 1;
 
   return @mod_dir;
-
 }
 
 sub print_modules {
@@ -378,7 +401,7 @@ sub print_modules {
   # hashes
   my ( %path, %inc_path, %mod_count, %found_mod);
 
-  my $HTML .= html_setup($self, $show_only, $color_specs, $section, $full_page); 
+  my $html .= html_setup($self, $show_only, $color_specs, $section, $full_page); 
 
   # Get ready to search 
   my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
@@ -386,7 +409,7 @@ sub print_modules {
   
   my @mod_dir = search_dir($from, $show_only, $core_dir1, $core_dir2);
   @path{@mod_dir} = ();
-  @inc_path{@INC} = ();      
+  @inc_path{@INC} = (); 
   for $base (@mod_dir) {  
     find ( sub { 
 	for (@INC, @mod_dir) {
@@ -428,12 +451,13 @@ sub print_modules {
       }, $base); 
    } # end of for loop
 
+   return undef unless $overall_total;
    my @sorted_modules = sort_modules(\%found_mod, $sort_by);
-   $HTML .= print_each_module(\@sorted_modules, $show_only, $color_specs, $core_dir1, $core_dir2, $link);      
-   $HTML .= print_module_results(\@mod_dir,\%mod_count, $from, $overall_total, $show_dir) if $show_inc;
-   $HTML .= "</div></body></html>" if $full_page; 
+   $html .= print_each_module(\@sorted_modules, $show_only, $color_specs, $core_dir1, $core_dir2, $link);      
+   $html .= print_module_results(\@mod_dir,\%mod_count, $from, $overall_total, $show_dir) if $show_inc;
+   $html .= "</div></body></html>" if $full_page; 
 
-   defined wantarray ? return $HTML : print $HTML;
+   defined wantarray ? return $html : print $html;
 
 }
 
@@ -464,38 +488,28 @@ Other information displayed:
    
 - The number of modules under each directory.
 
-You can chose to show 'core' modules or you can search for specific modules. You can also define search paths. HTML::Perlinfo::Modules searches the Perl include path (from @INC) by default. 
+You can chose to show 'core' modules or you can search for specific modules. You can also define search paths. HTML::Perlinfo::Modules searches the Perl include path (from @INC) by default. You can also highlight specific modules with different colors.
 
-You can also highlight specific modules with different colors.
+Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. 
 
-=head1 EXAMPLES
-
-	# List all modules, sort them by version, highlight DBI/DBD modules in blue, and label them 'Database modules' 
-        $m->print_modules(
-                sort_by => 'version',
-		color   => ['blue', qr/^(?:dbi|dbd)::/i, 'Database modules']
-	 );
-
-	# List all of the installed modules sorted alphabetically
-	$m->print_modules;
-
-	# Show me the same thing but turn off the links
-	$m->print_modules( links => [0]);
-
-	# List all modules under the /usr directory, override the Apache modules docs with my own root URL, 
-        # and highlight CGI modules in red and Win32 modules in yellow
-	$m->print_modules(
-                from      => '/usr',
-  		link      => [qr/Apache::/i, 'http://www.myexample.com/perldoc/'], 
-                color     => ['red', qr/CGI::/i, 'CGI modules'],
-                color     => ['yellow', qr/Win32::/i, 'Windoze modules']
-         );
+If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
 
 =head1 METHODS
 
 =head2 print_modules 
 
-This is the key method in this module. It accepts optional named parameters that dictate the display of module information. Those optional named parameters are:
+This is the key method in this module. It accepts optional named parameters that dictate the display of module information. Those optional named parameters are listed below. The method returns undefined if no modules were found. This means that you can write code such as:
+
+    my $modules = $m->print_modules(from=>'/home/paco');
+    
+    if ($modules) {
+        print $modules;
+    }
+    else {
+        print "No modules are in Paco's home directory!";
+    }
+
+The code example above will show you the modules in Paco's home directory if any are found. If none are found, the code prints the message in the else block. There is a LOT more you can do with the named parameters. Read on. 
 
 =head3 from
 
@@ -561,10 +575,11 @@ Ever wanted to call your modules by a petname? Or how about just labeling your c
 
 Do you want only a fragment of HTML and not a page with body tags (among other things)? Then the full_page option is what you need to use (or a regular expression, as explained in the L<HTML documentation|HTML::Perlinfo::HTML>). This option allows you to add your own header/footer if you so desire. By default, the value is 1. Set it to 0 to output the HTML report with as little HTML as possible. 
 
-    	$m = HTML::Perlinfo::Modules->new(
+    $m = HTML::Perlinfo::Modules->new(
 		    full_page  => 0   # Change value to 1 to get a full HTML page
 	    );
-	$m->print_modules; # You will still get an HTML page but without CSS settings or body tags
+
+    $m->print_modules; # You will still get an HTML page but without CSS settings or body tags
 
 	$m->print_modules( full_page => 1); # Now you will get the complete, default HTML page. 
 

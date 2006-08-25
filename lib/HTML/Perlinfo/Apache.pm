@@ -74,7 +74,7 @@ sub print_modperl {
             }
 	  } 	
 	  
-         my $image =  check_images('perl.apache.org') ? add_link('apache') : '';
+         my $image =  check_images('http://i104.photobucket.com') ? add_link('apache') : '';
 	 #my $image =  add_link('apache');
 	 return join '', print_box_start(0), $image, 
 		"Running under mod_perl version $version_status (version number: $version_number)",

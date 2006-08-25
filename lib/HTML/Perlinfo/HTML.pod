@@ -47,19 +47,40 @@ Attribute name/Corresponding CSS element
 
 =head2 CSS EXAMPLE
 
-    	$p = HTML::Perlinfo->new(
+    $p = HTML::Perlinfo->new(
 		bg_image  => 'http://www.tropic.org.uk/~edward/ctrip/images/camel.gif',
 		bg_repeat => 'yes-repeat'
 	);
 	$p->info_all;
 
-=head1 header
+=head1 print_htmlhead 
 
-You can request a content-type header. But you don't have to, since perlinfo is smart enough to know if you are using it over http or not. What's more, perlinfo uses the header function from Lincoln Stein's CGI module to produce the header. This function has the advantage of mod_perl detection (Thanks Lincoln). To send a header, set header to 1 in the constructor. Observe:
+This method prints the head container tags containing the style sheet, along with a few other html tags. It is useful to call this method when full_page is set to 0 and you are piecing together multiple perlinfo pages into one page. For example:
 
-    	$p = HTML::Perlinfo->new(
-		    header  => 1   # Change value to 0 to remove the header
-	    );
+    $m = HTML::Perlinfo::Modules->new(
+        full_page => 0     # Just the bare essentials please
+     );
+
+    $m->print_htmlhead;  # Print the beginning of an html document
+
+    $m->print_modules(  from =>'/home/paco', 
+                        section  => 'The Modules in Paco's Home Directory' 
+     ); 
+
+    $m->print_modules(  from =>'/home/cowboy', 
+                        section  => 'The Modules in Cowboy's Home Directory' 
+     ); 
+
+When full_page is set to 1 (the default value), print_htmlhead is called internally. Note that you can still set CSS values in the constructor even when full_page is set to 0 and see the results in print_htmlhead.
+
+    $m = HTML::Perlinfo::Modules->new(
+        full_page => 0,
+        bg_color  => 'gray'  
+     );
+
+    $m->print_htmlhead;  # Prints a HTML document with a gray background
+
+Of course, you don't have to use the print_htmlhead method. You could insert your own HTML with your own style sheet when you set full_page to 0. 
 
 =head1 full_page
 

@@ -16,7 +16,6 @@ sub new {
   my ($class, %params) = @_;
   my $self = {};
   $self->{full_page} = 1; 
-  $self->{header} = '';
   $self->{title} = 'perlinfo()';
   $self->{bg_image} = '';
   $self->{bg_position} = 'center';
@@ -55,8 +54,7 @@ sub info_all {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  # header is 1, then give header. If header is 0, then don't. 
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= $self->print_script();
   $html .= print_general();
@@ -71,7 +69,7 @@ sub info_general {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_general();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -82,7 +80,7 @@ sub info_modules {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{'full_page'};
   $html .= print_thesemodules('all');
   $html .= "</div></body></html>"  if $self->{'full_page'};
@@ -93,7 +91,7 @@ sub info_credits {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_credits(); 
   $html .= "</div></body></html>" if $self->{full_page};
@@ -104,7 +102,7 @@ sub info_config {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_config('info_config');
   $html .= "</div></body></html>" if $self->{full_page};
@@ -115,7 +113,7 @@ sub info_apache {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_httpd();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -126,7 +124,7 @@ sub info_variables {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_variables();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -138,7 +136,7 @@ sub info_license {
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
   $self->links(@{$param{'links'}});
-  my $html = ($self->{header} || defined($ENV{'SERVER_SOFTWARE'}) && length $self->{header} != 1) ? header() : '';
+  my $html;
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_license();
   $html .= "</div></body></html>" if $self->{full_page};

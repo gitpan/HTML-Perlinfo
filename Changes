@@ -1,5 +1,22 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+
+1.43 Bug fix that breaks old versions:
+	The previous version did not print the content-type header for HTML::Perlinfo::Modules. Upon
+	reflection, automatically printing the header is a bad idea anyway. So the perlinfo library 
+	no longer prints the content-type header. I added this feature a long time ago. But it causes 
+	more problems than anything else. Users must now print the header themselves.
+
+	Other changes:
+	- Added better titles to the perlinfo pages
+	- HTML::Perlinfo::Common:
+		* Changed the image locations per image hosting policy. 
+	- HTML::Perlinfo::Modules:
+		* print_modules now returns undef when no modules are found.
+		* Improved error reporting for the internal search_dir function
+	- HTML.pod:
+		* Added documentation for the print_htmlhead method.
+
 1.42 Bug fixes:
 	- HTML::Perlinfo::Modules:
 		* Major bug fix: print_modules was printing pages with full_page set to 0. 

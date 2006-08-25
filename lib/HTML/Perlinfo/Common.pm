@@ -299,10 +299,10 @@ sub add_link {
 	}
 	elsif ($type eq "ora") {
 		if ($value eq "camel1") {
-			return  qq~ <a href="http://www.perl.com/"><img border="0" src="http://www.oreilly.com/images/perl/sm_perl_id_313_wt.gif" alt="Perl Logo" title="Perl Logo" /></a> ~;
+			return  qq~ <a href="http://www.perl.com/"><img border="0" src="http://i104.photobucket.com/albums/m176/perlinfo/sm_perl_id_313_bk.gif" alt="Perl Logo" title="Perl Logo" /></a> ~;
 		}
 		elsif ($value eq "camel2") {
-			return qq~ <a href="http://www.perl.com/"><img border="0" src="http://www.oreilly.com/images/perl/powered_by_perl.gif" alt="Perl logo" title="Perl Logo" /></a> ~; 
+			return qq~ <a href="http://www.perl.com/"><img border="0" src="http://i104.photobucket.com/albums/m176/perlinfo/powered_by_perl.gif" alt="Perl logo" title="Perl Logo" /></a> ~; 
 
 		}
                 else {
@@ -310,7 +310,7 @@ sub add_link {
 		}
 	}
 	elsif ($type eq 'apache') {
-		return qq~ <a href="http://perl.apache.org/"><img src='http://perl.apache.org/about/link/buttons/button-110x30.gif' border=0 alt="mod_perl -- Speed, Power, Scalability"></a> ~;
+		return qq~ <a href="http://perl.apache.org/"><img src='http://i104.photobucket.com/albums/m176/perlinfo/button-110x30.gif' border=0 alt="mod_perl -- Speed, Power, Scalability"></a> ~;
 	}
 	elsif ($type eq "config") {
       		return $value unless $links{'docs'};

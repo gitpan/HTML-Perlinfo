@@ -72,7 +72,7 @@ sub print_config_sh {
 
 sub print_httpd {
 
-  my $a = HTML::Perlinfo::Apache->new( header=>0 );
+  my $a = HTML::Perlinfo::Apache->new();
 
   my $html .= print_section("Apache");
   $html .= print_table_start();
@@ -91,7 +91,7 @@ sub print_httpd {
 }
 
  sub print_thesemodules {
-    $m = HTML::Perlinfo::Modules->new( header=>0 );
+    $m = HTML::Perlinfo::Modules->new();
     return $m->print_modules(show_only=>$_[0], full_page=>0) if $_[0] eq 'core';
     return $m->print_modules(full_page=>0);
  }
@@ -99,7 +99,7 @@ sub print_httpd {
 sub print_general {
 
   my $html = print_box_start(1);
-  $html .= add_link('ora', 'camel1') if check_images('www.oreilly.com');
+  $html .= add_link('ora', 'camel1') if check_images('http://i104.photobucket.com');
   #$html .= add_link('ora', 'camel1');
   $html .= sprintf("<h1 class=\"p\">Perl Version %s</h1><br clear=all>Release date: %s", perl_version(), release());
 		 
@@ -148,7 +148,7 @@ $html .= print_table_end();
   $html .= print_box_start(0);
 
   
-  if (check_images('www.oreilly.com')) {
+  if (check_images('http://i104.photobucket.com')) {
     $html .= add_link('ora', 'camel2');
     $html .= "This is perl, v$Config{version} built for $Config{archname}<br />Copyright (c) 1987-@{[ sprintf '%d', (localtime)[5]+1900]}, Larry Wall";
     $html .= "</td></tr></table>";
