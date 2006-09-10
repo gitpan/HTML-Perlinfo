@@ -10,13 +10,11 @@ use Carp ();
 use warnings;
 use strict;
 
-
-
 sub new {
   my ($class, %params) = @_;
   my $self = {};
   $self->{full_page} = 1; 
-  $self->{title} = 'perlinfo()';
+  $self->{title} = 0;
   $self->{bg_image} = '';
   $self->{bg_position} = 'center';
   $self->{bg_repeat} = 'no_repeat';
@@ -53,8 +51,9 @@ sub info_all {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_ALL)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= $self->print_script();
   $html .= print_general();
@@ -68,8 +67,9 @@ sub info_general {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_GENERAL)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_general();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -79,8 +79,9 @@ sub info_modules {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_MODULES)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{'full_page'};
   $html .= print_thesemodules('all');
   $html .= "</div></body></html>"  if $self->{'full_page'};
@@ -90,8 +91,9 @@ sub info_credits {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_CREDITS)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_credits(); 
   $html .= "</div></body></html>" if $self->{full_page};
@@ -101,8 +103,9 @@ sub info_config {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_CONFIG)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_config('info_config');
   $html .= "</div></body></html>" if $self->{full_page};
@@ -112,8 +115,9 @@ sub info_apache {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_APACHE)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_httpd();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -123,8 +127,9 @@ sub info_variables {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_VARIABLES)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_variables();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -135,8 +140,9 @@ sub info_license {
   my $self = shift;
   my %param = @_;
   error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}});
+  $self->links(@{$param{'links'}}) if exists $param{'links'};
   my $html;
+  $self->{title} = 'perlinfo(INFO_LICENSE)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
   $html .= print_license();
   $html .= "</div></body></html>" if $self->{full_page};
@@ -249,7 +255,7 @@ sub links {
   elsif (exists $args->{'local'} && not exists $args->{'docs'}) {
     $HTML::Perlinfo::Common::links{'local'} = $args->{'local'};
   }			 
-  else {
+  elsif (exists $args->{'docs'} && exists $args->{'local'}) {
     $HTML::Perlinfo::Common::links{'docs'} = $args->{'docs'}, 
     $HTML::Perlinfo::Common::links{'local'} = $args->{'local'}, 
   }

@@ -9,7 +9,6 @@ use Carp ();
 use IO::Socket;
 use Module::CoreList;
 use File::Which;
-
 our %links;
 
 %links = ( 
@@ -118,6 +117,7 @@ sub  print_table_colspan_header {
 	  
   }
 
+
  sub print_table_color_start {
 
  	return qq~<table class="modules" cellpadding=4 cellspacing=4 border=0 width="600"><tr>\n~;
@@ -150,11 +150,11 @@ sub  print_table_colspan_header {
  sub print_table_row_color {
 
   	  my $num_cols = $_[0];
-          my $HTML = "<tr bgcolor=\"$_[1]\">";
+          my $HTML = $_[1] ? "<tr bgcolor=\"$_[1]\">" : "<tr>";
 
           for ($i=0; $i<$num_cols; $i++) {
 
-                  $HTML .= "<td bgcolor=\"$_[1]\">";
+                  $HTML .= $_[1] ? "<td bgcolor=\"$_[1]\">" : sprintf("<td class=\"%s\">", ($i==0 ? "e" : "v" ));
 
                   my $row_element = $_[$i+2]; # start at the 2nd element
                   if ((not defined ($row_element)) || ($row_element !~ /\S/)) {
@@ -201,6 +201,7 @@ sub  print_table_colspan_header {
 	  return "<hr />\n";
 
   }
+
 
   sub print_table_header {
 

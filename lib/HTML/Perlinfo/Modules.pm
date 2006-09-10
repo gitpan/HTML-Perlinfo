@@ -8,7 +8,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.04';
+$VERSION = '1.05';
 
 sub new {
 
@@ -21,13 +21,13 @@ sub new {
 sub module_color_check {
 
 	my ($module_name, $color_specs) = @_;
-        if (ref($color_specs->[0]) eq 'ARRAY') {
+        if (defined $color_specs && ref($color_specs->[0]) eq 'ARRAY') {
           foreach (@{ $color_specs }) {
             return $_->[0] if lc($module_name) =~ $_->[1]; 
           }
         }
         else {
-	  return $color_specs->[0] if lc($module_name) =~ $color_specs->[1];
+	      return $color_specs->[0] if (defined $color_specs && lc($module_name) =~ $color_specs->[1]);
 	}
 	return 0;
 }
@@ -73,33 +73,31 @@ sub sort_modules {
 
 sub html_setup {
  
- my ($self, $show_only, $color_specs, $section, $full_page) = @_;
+ my ($self, $columns, $color_specs, $section, $full_page) = @_;
  
  my $html;
 
  $html .= $self->print_htmlhead if $full_page; 
 
-if ($show_only eq 'core') {
-                $html .= $section ? print_section($section) : print_section("Core Perl modules installed");
-                $html .= print_table_start();
-                $html .= print_table_header(3, "Module name", "Version", "Location");
- }
- else {
-	        $html .= $section ? print_section($section) : '';
-                $html .= print_color_codes($color_specs) if $color_specs;
-                $html .= print_table_start();
-                $html .= print_table_header(4, "Module name", "Version", "Core", "Location");
- }
+ my %show_columns = ( 
+		'name'    => 'Module name',
+		'version' => 'Version',
+		'path'	  => 'Location',
+		'core' 	  => 'Core'
+	);
 
+  $html .= $section ? print_section($section) : '';
+  $html .= print_color_codes($color_specs) if $color_specs && $color_specs->[2];
+  $html .= print_table_start();
+  $html .= print_table_header(scalar @$columns, map{ $show_columns{$_} }@$columns);
 return $html;
-
 }
 
 sub module_info {
    my ($module_path, $show_only) = @_;
    my ($mod_name, $mod_version, @mod_info);
-   open(MOD, $module_path) or return 0; 
    no warnings 'all'; # silence warnings
+   open(MOD, $module_path) or return 0; 
    my $inpod = 0;
     while (<MOD>) {
       if (/^ *package +(\S+);/) {       # This is not fool proof and even fails one of the perlinfo modules!
@@ -132,119 +130,42 @@ sub module_info {
    return \@mod_info;
 }
 
-
-sub print_each_module {
-
-  my ($sorted_modules, $show_only, $color_specs, $core_dir1, $core_dir2, $link) = @_;
-  my $HTML;
-  if ($show_only eq 'core') {
-          if ($color_specs) {
-            for $module (@$sorted_modules) {
-                my $row_color = module_color_check($module->[0], $color_specs);
-                if ($row_color) {
-                  $HTML .= print_table_row_color(3,
-                                $row_color,
-                                add_link('cpan', $module->[0], $link),
-                                $module->[1],
-                                $module->[2]
-                           );
-                }
-                else {
-                  $HTML .= print_table_row(3,
- 				add_link('cpan', $module->[0], $link),
-                                $module->[1],
-                                $module->[2]
-                           );
-                }
-            }
-          }
-          else {
-            for $module (@$sorted_modules) {
-                $HTML .= print_table_row(3,
-                                add_link('cpan', $module->[0], $link),
-                                $module->[1],
-                                $module->[2]
-                           );
-            }
-          }
-        }
-  else {
-          if ($color_specs) {
-            for $module (@$sorted_modules) {
-                $is_core = (grep File::Spec->rel2abs($module->[2]) =~ /\Q$_/, ($core_dir1, $core_dir2)) ? "yes" : "no";
-                my $row_color = module_color_check($module->[0], $color_specs);
-                if ($row_color) {
-                  $HTML .= print_table_row_color(4,
-                                $row_color,
-                                add_link('cpan', $module->[0], $link),
-                                $module->[1],
-                                $is_core,
-                                $module->[2]
-                           );
-                }
-                else {
-                  $HTML .= print_table_row(4,
-                                add_link('cpan', $module->[0], $link),
-                                $module->[1],
-                                $is_core,
-                                $module->[2]
-                           );
-                }
-            }
-          }
-          else {
-            for $module (@$sorted_modules) {
-                $is_core = (grep File::Spec->rel2abs($module->[2]) =~ /\Q$_/, ($core_dir1, $core_dir2)) ? "yes" : "no";
-                $HTML .= print_table_row(4,
-                                add_link('cpan', $module->[0], $link),
-                                $module->[1],
-                                $is_core,
-                                $module->[2]
-                          );
-            }
-          }
-  }
- $HTML .= print_table_end();
- return $HTML;
-
-}
-
 sub print_color_codes {
   my $color_specs = shift;
-  my ($HTML, $label);
-  $HTML .= print_table_start();
-  $HTML .= print_table_header(1, "Module Color Codes");
-  $HTML .= print_table_color_start();
+  my ($html, $label);
+  $html .= print_table_start();
+  $html .= print_table_header(1, "Module Color Codes");
+  $html .= print_table_color_start();
 
   if (ref($color_specs->[0]) eq 'ARRAY') {
      my $count = 0;
      foreach (@{ $color_specs }) {
-        $HTML .= "<tr>" if $count++ % 5 == 0;
+        $html .= "<tr>" if $count++ % 5 == 0;
         $label = $_->[2] || $_->[1];
-        $HTML .= print_color_box($_->[0], $label);
-        $HTML .= "</tr>" if (($count >= 5 && $count % 5 == 0)||($count >= @{$color_specs}));
+        $html .= print_color_box($_->[0], $label);
+        $html .= "</tr>" if (($count >= 5 && $count % 5 == 0)||($count >= @{$color_specs}));
      }
   }
   else {
     $label = $color_specs->[2] || $color_specs->[1];
-    $HTML .= print_color_box($color_specs->[0], $label);
+    $html .= print_color_box($color_specs->[0], $label);
   }
 
-  $HTML .= print_table_color_end();
-  $HTML .= print_table_end();
-  return $HTML;
+  $html .= print_table_color_end();
+  $html .= print_table_end();
+  return $html;
 }
 
 sub print_module_results {
 
   my ($mod_dir, $mod_count, $from, $overall_total, $show_dir) = @_;
 
-  my ($HTML, $total_amount, $searched, @mod_dir, @bad_dir, %seen);
+  my ($html, $total_amount, $searched, @mod_dir, @bad_dir, %seen);
   
   if ($show_dir) {
 
-    $HTML .= print_table_start();
-    $HTML .= print_table_header(2, "Directory", "Number of Modules");
+    $html .= print_table_start();
+    $html .= print_table_header(2, "Directory", "Number of Modules");
      for my $dir (keys %{$mod_count}) {
          my $amount_found = $mod_count->{$dir};
          push (@mod_dir, $dir) if $amount_found;
@@ -259,10 +180,10 @@ sub print_module_results {
      }
      for my $top_dir (@mod_dir) {
          unless (grep{$_ eq $top_dir }@bad_dir) {
-           $HTML .= print_table_row(2, add_link('local', File::Spec->canonpath($top_dir)), $mod_count->{$top_dir});
+           $html .= print_table_row(2, add_link('local', File::Spec->canonpath($top_dir)), $mod_count->{$top_dir});
          }
      }
-    $HTML .= print_table_end();
+    $html .= print_table_end();
   }
   else {
   # Print out directories not in @INC
@@ -270,39 +191,39 @@ sub print_module_results {
     my @module_paths = grep { not exists $seen{$_} }@$mod_dir;
 
     if (@module_paths >= 1) { 
-      $HTML .= print_table_start();
-      $HTML .= print_table_header(3, "Directory", "Searched", "Number of Modules");
+      $html .= print_table_start();
+      $html .= print_table_header(3, "Directory", "Searched", "Number of Modules");
 
       for my $dir (map{ File::Spec->canonpath($_) }@module_paths) {
         $searched = (grep { $_ eq $dir } @$mod_dir) ? "yes" : "no";
         my $amount_found = ($searched eq 'yes') ? $mod_count->{$dir} : '<i>unknown</i>';
-        $HTML .= print_table_row(3, add_link('local', File::Spec->canonpath($dir)), $searched, $amount_found);
+        $html .= print_table_row(3, add_link('local', File::Spec->canonpath($dir)), $searched, $amount_found);
       }
-      $HTML .= print_table_end();
+      $html .= print_table_end();
     }
   
   
-    $HTML .= print_table_start();
-    $HTML .= print_table_header(3, "Include path (INC) directories", "Searched", "Number of Modules");
+    $html .= print_table_start();
+    $html .= print_table_header(3, "Include path (INC) directories", "Searched", "Number of Modules");
       for my $dir (@mod_dir) {
         $searched = exists $mod_count->{$dir} ? 'yes' : 'no'; 
         my $amount_found = ($searched eq 'yes') ? $mod_count->{$dir} : '<i>unknown</i>';
-        $HTML .= print_table_row(3, add_link('local', File::Spec->canonpath($dir)), $searched, $amount_found);
+        $html .= print_table_row(3, add_link('local', File::Spec->canonpath($dir)), $searched, $amount_found);
       }
 
-    $HTML .= print_table_end();
+    $html .= print_table_end();
   }
   
-  $HTML .= print_table_start();
+  $html .= print_table_start();
   #my $view = ($from eq 'all') ? 'installed' : 
   #          ($from eq 'core') ? 'core' : 'found';
 
-  $HTML .= print_table_row(2, "Total modules", $overall_total);
-  $HTML .= print_table_end();
+  $html .= print_table_row(2, "Total modules", $overall_total);
+  $html .= print_table_end();
 
-  $HTML .= print_table_end();
+  $html .= print_table_end();
 
-  return $HTML;
+  return $html;
 
 }
 
@@ -310,7 +231,7 @@ sub check_my_args {
 
   my ($key, $value) = @_;
   my ($message, %allowed);
-  @allowed{qw(from sort_by color link show_only section full_page show_inc show_dir)} = ();
+  @allowed{qw(from columns sort_by color link show_only section full_page show_inc show_dir)} = ();
 
   if (not exists $allowed{$key}) {
     $message = "$key is an invalid print_modules parameter";
@@ -318,8 +239,11 @@ sub check_my_args {
   elsif ($key eq 'sort_by' && $value !~ /^(?:name|version)$/i) {
     $message = "$value is an invalid sort"; 
   }
-  elsif ($key =~ /^(?:color|link)$/ && ref($value) ne 'ARRAY') {
+  elsif ($key =~ /^(?:color|link|columns)$/ && ref($value) ne 'ARRAY') {
     $message = "The $key parameter value is not an array reference";
+  }
+  elsif ($key eq 'columns' && grep(!/^(?:name|version|path|core)$/, @{$value})) {
+    $message = "Invalid column name in the $key parameter";
   }
   elsif ($key eq 'color' && @{$value} <= 1) {
     $message = "You didn't specify a module to color";
@@ -380,34 +304,97 @@ sub search_dir {
   return @mod_dir;
 }
 
-sub print_modules {
+sub get_input {
 
   my $self = shift;
   my $args = process_args(@_, \&check_my_args);
-  my $sort_by     = $args->{'sort_by'} || 'name';
-  my $from        = $args->{'from'} || \@INC;
-  my $show_only   = $args->{'show_only'} || "";
-  my $color_specs = $args->{'color'};
-  my $link        = $args->{'link'};
-  my $section     = $args->{'section'};
-  my $full_page   = exists $args->{'full_page'} ? $args->{'full_page'} :  $self->{'full_page'};
-  my $show_inc    = exists $args->{'show_inc'}  ? $args->{'show_inc'} : 1;
-  my $show_dir    = exists $args->{'show_dir'}  ? $args->{'show_dir'} : 0;
+  my %input = ();
+  $input{'sort_by'}     = $args->{'sort_by'} || 'name';
+  $input{'from'}        = $args->{'from'} || \@INC;
+  $input{'show_only'}   = $args->{'show_only'} || "";
+  $input{'color_specs'} = $args->{'color'};
+  $input{'link'}        = $args->{'link'};
+  $input{'section'}     = exists $args->{'section'} ? $args->{'section'} : 
+			  $input{'show_only'} eq 'core' ? 'Core Perl modules installed' : '';
+  $input{'full_page'}   = exists $args->{'full_page'} ? $args->{'full_page'} :  $self->{'full_page'};
+  $input{'show_inc'}    = exists $args->{'show_inc'}  ? $args->{'show_inc'} : 1;
+  $input{'show_dir'}    = exists $args->{'show_dir'}  ? $args->{'show_dir'} : 0;
+  $input{'columns'}     = exists $args->{'columns'}   ? $args->{'columns'}  :
+	                  $input{'show_only'} eq 'core' ? ['name','version','path'] : ['name','version','core','path'];
+  return %input;              
+ }
+
+sub print_modules {
  
- 
+  my %input = get_input(@_);
+  
+  # Get ready to search 
+  my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
+  my $core_dir2 = File::Spec->canonpath($Config{installprivlib});
+  
+  my @mod_dir = search_dir($input{'from'}, $input{'show_only'}, $core_dir1, $core_dir2);
+
+  my ($overall_total, $found_mod, $mod_count) = find_modules($input{'show_only'}, \@mod_dir);
+  
+  return undef unless $overall_total;
+  
+  my @sorted_modules = sort_modules($found_mod, $input{'sort_by'});
+  
+  my $html .= html_setup( $_[0], 
+                          $input{'columns'}, 
+                          $input{'color_specs'}, 
+                          $input{'section'}, 
+                          $input{'full_page'}
+                        );
+
+  my $numberof_columns = scalar @{$input{'columns'}};
+                        
+  foreach my $module (@sorted_modules) {
+  
+       $html .= print_table_row_color(  $numberof_columns, 
+                                        module_color_check($module->[0], $input{'color_specs'}), 
+                                        map{  
+                                                    if ($_ eq 'name') {
+                                                        add_link('cpan', $module->[0], $input{'link'});
+                                                    }
+                                                    elsif ($_ eq 'version') {
+                                                        $module->[1];
+                                                    }
+                                                    elsif ($_ eq 'path') {
+                                                        $module->[2];
+                                                    }
+                                                    elsif ($_ eq 'core') {
+					                                    (grep File::Spec->rel2abs($module->[2]) =~ /\Q$_/,
+                                                          ($core_dir1, $core_dir2)) ? 'yes' : 'no'; 
+                                                    }
+                                                    
+                                                 }  @{$input{'columns'}} );
+  }
+  
+ $html .= print_table_end();
+ $html .= print_module_results( \@mod_dir,
+                                $mod_count, 
+                                $input{'from'}, 
+                                $overall_total, 
+                                $input{'show_dir'}) if $input{'show_inc'};
+                                
+ $html .= "</div></body></html>" if $input{'full_page'}; 
+  
+  defined wantarray ? return $html : print $html;
+                
+}
+
+sub find_modules {
+
+  my ($show_only, $mod_dir) = @_;
+
   my ( $overall_total, $total_found_inbase, $mod_version, $base, $eval, $mod_info_line, $start_dir, $mod_name, $new_val, $below_inc, $last_inc_dir );
   # arrays
   my (@modinfo_array, @key_value, @inc_dir);
   # hashes
   my ( %path, %inc_path, %mod_count, %found_mod);
-
-  my $html .= html_setup($self, $show_only, $color_specs, $section, $full_page); 
-
-  # Get ready to search 
-  my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
-  my $core_dir2 = File::Spec->canonpath($Config{installprivlib});
+  my @mod_dir = @$mod_dir;
   
-  my @mod_dir = search_dir($from, $show_only, $core_dir1, $core_dir2);
   @path{@mod_dir} = ();
   @inc_path{@INC} = (); 
   for $base (@mod_dir) {  
@@ -451,13 +438,7 @@ sub print_modules {
       }, $base); 
    } # end of for loop
 
-   return undef unless $overall_total;
-   my @sorted_modules = sort_modules(\%found_mod, $sort_by);
-   $html .= print_each_module(\@sorted_modules, $show_only, $color_specs, $core_dir1, $core_dir2, $link);      
-   $html .= print_module_results(\@mod_dir,\%mod_count, $from, $overall_total, $show_dir) if $show_inc;
-   $html .= "</div></body></html>" if $full_page; 
-
-   defined wantarray ? return $html : print $html;
+  return ($overall_total, \%found_mod, \%mod_count);
 
 }
 
@@ -478,7 +459,7 @@ HTML::Perlinfo::Modules - Display a lot of module information in HTML format
 
 =head1 DESCRIPTION
 
-This module outputs information about your Perl modules in HTML. By default, the module names are sorted alphabetically in a list. This list is also sortable by version number. 
+This module outputs information about your Perl modules in HTML. The information includes the names, versions, and location of modules. The HTML presents the module information in two sections, one section is a list of modules and the other is a summary of this list. Both the list and its summary are configurable.  
 
 Other information displayed: 
 
@@ -489,10 +470,6 @@ Other information displayed:
 - The number of modules under each directory.
 
 You can chose to show 'core' modules or you can search for specific modules. You can also define search paths. HTML::Perlinfo::Modules searches the Perl include path (from @INC) by default. You can also highlight specific modules with different colors.
-
-Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. 
-
-If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
 
 =head1 METHODS
 
@@ -509,7 +486,20 @@ This is the key method in this module. It accepts optional named parameters that
         print "No modules are in Paco's home directory!";
     }
 
-The code example above will show you the modules in Paco's home directory if any are found. If none are found, the code prints the message in the else block. There is a LOT more you can do with the named parameters. Read on. 
+The code example above will show you the modules in Paco's home directory if any are found. If none are found, the code prints the message in the else block. There is a lot more you can do with the named parameters, but you do not have to use them. For example: 
+
+    $m->print_modules; 
+	
+    # The above line is the equivalent of saying:
+    $m->print_modules(
+			from     => /@INC,
+			columns  => ['name','version','core','path'],
+			sort_by  => 'name',
+			show_inc => 1
+	 );
+	
+    # Alternatively, in this case, you could use the HTML::Perlinfo function to achieve the same result:
+    perlinfo(INFO_MODULES); 
 
 =head3 from
 
@@ -518,6 +508,38 @@ Show modules from specific directories.
 This parameter accepts 2 things: a single directory or an array reference (containing directories).
 
 The default value is the Perl include path. This is equivalent of supplying \@INC as a value. If you want to show all of the modules on your box, you can specify '/' as a value (or the disk drive on Windows). 
+
+=head3 columns
+
+This parameter allows you to control the table columns in the list of modules. With this parameter, you can dictate which columns will be shown and their order. Examples:
+
+    # Show only module names
+    columns=>['name']
+
+    # Show version numbers before names
+    columns=>['version','name']
+  
+The column parameter accepts an array reference containing strings that represent the column names. Those names are:
+
+=over
+
+=item name 
+
+The module name. This value is the namespace in the package declaration. Note that the method for retrieving the module name is not fool proof, since a module file can have multiple package declarations. HTML::Perlinfo::Modules grabs the namespace from the first package declaration that it finds.  
+
+=item version
+
+The version number. Divines the value of $VERSION. This uses the same method as ExtUtils::MakeMaker and all caveats therein apply. 
+
+=item path
+
+The full path to the module file on disk.
+
+=item core
+
+This column value (either 'yes' or 'no') will tell you if the module is core. In other words, it will tell you if the module was included in your Perl distribution. If the value is 'yes', then the module lives in either the installarchlib or the installprivlib directory listed in the config file. 
+
+=back
 
 =head3 sort_by
 
@@ -539,7 +561,7 @@ In addition to a precompiled regular expression, show_only also accepts the word
 
 =head3 show_inc
 
-Whenever you perform a module search, you will see a summary of your search that includes the directories searched and the number of modules found. Whether or not your search encompasses the Perl include path (@INC), you will still see the directories in this special path, along with any directories that were actually searched. If you do not what to see this search summary, you must set show_inc to 0. The default value is 1. 
+Whenever you perform a module search, you will see a summary of your search that includes the directories searched and the number of modules found. Whether or not your search encompasses the Perl include path (@INC), you will still see these directories, along with any other directories that were actually searched. If you do not what to see this search summary, you must set show_inc to 0. The default value is 1. 
 
 =head3 show_dir
 
@@ -549,27 +571,24 @@ Setting this parameter to 1 will only show you the directories in which your mod
 
 This parameter allows you to highlight modules with different colors. Highlighting specific modules is a good way to draw attention to them. 
 
-The parameter value must be an array reference containing at least 2 elements. The first element is the color itself which can be either a hex code like #FFD700 or the name of the color. The second element, a precompiled regular expression, specifies the module(s) to color. And the third, optional element in the array reference acts as a label in the color code section. This final element can even be a link if you so desire. 
+The parameter value must be an array reference containing at least 2 elements. The first element is the color itself which can be either a hex code like #FFD700 or the name of the color. The second element, a precompiled regular expression, specifies the module(s) to color. And the third, optional element, in the array reference acts as a label in the color code section. This final element can even be a link if you so desire. 
 
 Examples:
 
 	color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'>Apache modules</a>"],
  	color => ['#FFD700', qr/CGI/i] 	
 
-In the second example, the label defaults to '(?i-xsm:CGI)' since there is no third element. 
-
+Note: In the second example, there is no third element in array reference, so there will be no color code section in the HTML. Only the color-coded modules (in this case, CGI modules) will be shown.  
 
 =head3 section
 
-Ever wanted to call your modules by a petname? Or how about just labeling your company's modules with a heading, so you can more quickly discern what you are looking at? The section parameter lets you do that!  
+The section parameter lets you put a heading above the module list. Example:  
 
-	$m->print_modules( show_only=>qr/^(?:DBI::|DBD::)|Oracle/i,
-                           show_dir=>1,
-                           section=>'Database modules');
-
-	$m->print_modules( show_only=>qr/^Apache::/i,
-                           show_dir=>1,
-                           section=>'Apache/mod_perl modules');
+    $m->print_modules(  
+		        show_only=>qr/^Apache::/i,
+                        section=>'Apache/mod_perl modules'
+                        show_dir=>1,
+   	);
 
 =head3 full_page
 
@@ -613,7 +632,7 @@ I will be notified, and then you'll automatically be notified of progress on you
 
 =head1 NOTES
 
-Suggestions/comments/code welcomed.    
+If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
 
 =head1 SEE ALSO
 

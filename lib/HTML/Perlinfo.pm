@@ -1,17 +1,16 @@
 package HTML::Perlinfo;
 
-# core modules
 use CGI::Carp 'fatalsToBrowser';
 use Carp (); 
 
-# non-core
 use HTML::Perlinfo::Apache;
 use HTML::Perlinfo::Modules; 
 use HTML::Perlinfo::Common;
+
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.43';
+$VERSION = '1.44';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -22,7 +21,7 @@ sub perlinfo {
   error_msg("@_ is an invalid perlinfo() parameter")
   if (($info !~ /INFO_ALL|INFO_GENERAL|INFO_CREDITS|INFO_CONFIG|INFO_VARIABLES|INFO_APACHE|INFO_MODULES|INFO_LICENSE/) || @_ > 1); 
  
-  my $p = HTML::Perlinfo->new( 'title' => "perlinfo($info)");
+  my $p = HTML::Perlinfo->new();
 
   if ($info eq 'INFO_ALL') {
     $p->info_all;
@@ -64,11 +63,9 @@ HTML::Perlinfo - Display a lot of Perl information in HTML format
 
 This module outputs a large amount of information about your Perl installation in HTML. So far, this includes information about Perl compilation options, the Perl version, server information and environment, HTTP headers, OS version information, Perl modules, and more. 
 
-HTML::Perlinfo is aimed at Web developers, but almost anyone using Perl may find it useful.
+HTML::Perlinfo is aimed at Web developers, but almost anyone using Perl may find it useful. It is a valuable debugging tool as it contains all EGPCS (Environment, GET, POST, Cookie, Server) data.
 
-Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. 
-
-If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
+The output may be customized by passing one of the following options. 
 
 =head1 OPTIONS
 
@@ -111,6 +108,41 @@ Shows all of the above defaults. This is the default value.
 
 =back
 
+=head1 PROGRAMMING STYLE
+
+There are two styles of programming with Perlinfo.pm, an function-oriented style and a object-oriented style.
+
+Function-oriented style:
+
+	# Show all information, defaults to INFO_ALL
+	perlinfo();
+
+	# Show only module information. This shows all installed modules.
+	perlinfo(INFO_MODULES);
+
+Object-oriented style:
+
+	$p = new HTML::Perlinfo;
+	$p->info_all;
+
+	# You can also set the CSS values in the constructor!
+    	$p = HTML::Perlinfo->new(
+		bg_image  => 'http://i104.photobucket.com/albums/m176/perlinfo/camel.gif',
+		bg_repeat => 'yes-repeat'
+	);
+	$p->info_all;
+
+More examples ...
+
+	# This is wrong (no capitals)
+	$p->INFO_CREDITS;
+
+	# But this is correct
+	perlinfo(INFO_CREDITS);
+	
+	# Ditto
+	$p->info_credits;
+
 =head1 CUSTOMIZING THE HTML
 
 You can capture the HTML output and manipulate it or you can alter CSS elements with object attributes.
@@ -123,17 +155,17 @@ Displaying detailed server information on the internet is not a good idea and HT
 
 =head1 REQUIREMENTS
 
-HTML::Perlinfo requires only 3 non-core modules. These 3 modules are:
+HTML::Perlinfo requires only 2 non-core modules. These 2 modules are:
 
 L<App::Info> - for some HTTPD information
-
-L<Module::CoreList> - for Perl release dates
 
 L<File::Which> - for searching the path
 
 =head1 NOTES
 
 Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
+
+Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
 
 =head1 BUGS
 

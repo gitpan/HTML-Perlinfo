@@ -48,7 +48,7 @@ Attribute name/Corresponding CSS element
 =head2 CSS EXAMPLE
 
     $p = HTML::Perlinfo->new(
-		bg_image  => 'http://www.tropic.org.uk/~edward/ctrip/images/camel.gif',
+		bg_image  => 'http://i104.photobucket.com/albums/m176/perlinfo/camel.gif',
 		bg_repeat => 'yes-repeat'
 	);
 	$p->info_all;
