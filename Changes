@@ -1,13 +1,24 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.45 Changes:
+	- Updated pod
+	- The description column appears in the perlinfo core module section
+	- The info_modules method/option shows the description, instead of the path 
+	HTML::Perlinfo::Modules
+	- Updated lots of pod
+	- Added 'desc' column
+	- Made the search_dir function better report @INC errors
+	- Rewrote some internal code
+	- Moved the check_my_args function to Common.pm, renamed it check_module_args
+
 1.44 Changes:
 	- Added titles to the perlinfo methods
 	- Improved pod
 	HTML::Perlinfo::Modules:
 	- Added columns parameter. This allowed me to rewrite a lot of internal code.
 	- Changed color parameter to exclude color section without 3rd element in array ref
-        - Improved pod
-      Bug fixes:
+    - Improved pod
+    Bug fixes:
 	- Fixed a bug that excluded links of the config keys in the INFO_CONFIG section
 
 1.43 Bug fix that breaks old versions:

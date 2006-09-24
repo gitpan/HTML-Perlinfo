@@ -1,7 +1,7 @@
 package HTML::Perlinfo::Common;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(initialize_globals print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_license add_link check_images check_path check_args perl_version release process_args error_msg);
+our @EXPORT = qw(initialize_globals print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_license add_link check_images check_path check_args check_module_args perl_version release process_args error_msg);
 require Exporter;
 
 use CGI::Carp 'fatalsToBrowser';
@@ -55,6 +55,47 @@ sub check_args {
   error_msg("$message") if $message;
 
 }
+
+sub check_module_args {
+
+  my ($key, $value) = @_;
+  my ($message, %allowed);
+  @allowed{qw(from columns sort_by color link show_only section full_page show_inc show_dir)} = ();
+
+  if (not exists $allowed{$key}) {
+    $message = "$key is an invalid print_modules parameter";
+  }
+  elsif ($key eq 'sort_by' && $value !~ /^(?:name|version)$/i) {
+    $message = "$value is an invalid sort"; 
+  }
+  elsif ($key =~ /^(?:color|link|columns)$/ && ref($value) ne 'ARRAY') {
+    $message = "The $key parameter value is not an array reference";
+  }
+  elsif ($key eq 'columns' && grep(!/^(?:name|version|desc|path|core)$/, @{$value})) {
+    $message = "Invalid column name in the $key parameter";
+  }
+  elsif ($key eq 'color' && @{$value} <= 1) {
+    $message = "You didn't specify a module to color";
+  }
+  elsif ($key eq 'color' && ref($value->[1]) ne 'Regexp') {
+    $message = "Not a properly-formatted regular expression in the $key parameter value";
+  }
+  elsif ($key eq 'link' && @{$value} <= 1 && $value->[0] != 0) {
+    $message = "You didn't provide a URL for the $key parameter";
+  }
+  elsif ($key eq 'show_only' && (ref($value) ne 'Regexp') && lc $value ne 'core') {
+    $message = "$value is an invalid value for the $key parameter";
+  }
+  elsif ($key eq 'full_page' && $value != 0 && $value != 1 ) {
+    $message = "$value is an invalid value for the $key parameter";
+  }
+  elsif ($key eq 'link' && ($value->[0] ne 'all' && $value->[0] != 0 && ref($value->[0]) ne 'Regexp')) {
+    $message = "Invalid first element in the $key parameter value";
+  }
+  error_msg("$message") if $message;
+}
+
+
 
 sub process_args {
   # This sub returns a hash ref containing param args

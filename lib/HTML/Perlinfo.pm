@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.44';
+$VERSION = '1.45';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -110,7 +110,7 @@ Shows all of the above defaults. This is the default value.
 
 =head1 PROGRAMMING STYLE
 
-There are two styles of programming with Perlinfo.pm, an function-oriented style and a object-oriented style.
+There are two styles of programming with Perlinfo.pm, a function-oriented style and an object-oriented style.
 
 Function-oriented style:
 

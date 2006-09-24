@@ -34,7 +34,7 @@ sub test {
 sub test_mods {
   my $html;
   my $m = HTML::Perlinfo::Modules->new( full_page => 0 );
-  eval { $html = $m->print_modules( show_only=>'core'); };
+  eval { $html = $m->print_modules( show_only=>qr/File::Spec/i, columns=>['name']); };
   die $@ if $@;
   return 1;
 }

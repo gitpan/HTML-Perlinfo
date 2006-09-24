@@ -12,11 +12,11 @@ In the perlinfo library, L<HTML::Perlinfo> and L<HTML::Perlinfo::Modules> use th
 
 You can capture the HTML output by assigning it to a scalar. Then you can alter the HTML before printing it or doing something else with it. Here is an example that uses the perlinfo function from L<HTML::Perlinfo>:  
 
-       use HTML::Perlinfo;
+	use HTML::Perlinfo;
 
-       my $example = perlinfo();    # Now I can do whatever I want with $example
-       $example =~ s/Perl/Java/ig;  # Make everyone laugh  
-       print $example;       
+    my $example = perlinfo();    # Now I can do whatever I want with $example
+   	$example =~ s/Perl/Java/ig;  # Make everyone laugh  
+    print $example;       
 
 Another option is to use object attributes which make altering some HTML elements less helter skelter. 
 
@@ -26,15 +26,15 @@ These object attributes allow you to change the HTML CSS settings to achieve a s
 
 Attribute name/Corresponding CSS element
 
- title                  / page title (only non-CSS element)
- bg_image 		/ background_image
+ title              / page title (only non-CSS element)
+ bg_image 			/ background_image
  bg_position 		/ background_position
- bg_repeat 		/ background_repeat
+ bg_repeat 			/ background_repeat
  bg_attribute 		/ background_attribute 
- bg_color 		/ background_color
- ft_family 		/ font_familty 
- ft_color 		/ font_color
- lk_color 		/ link color
+ bg_color 			/ background_color
+ ft_family 			/ font_familty 
+ ft_color 			/ font_color
+ lk_color 			/ link color
  lk_decoration 		/ link text-decoration  
  lk_bgcolor 		/ link background-color 
  lk_hvdecoration 	/ link hover text-decoration 
@@ -86,9 +86,9 @@ Of course, you don't have to use the print_htmlhead method. You could insert you
 
 Do you want only a fragment of HTML and not a page with body tags (among other things)? Then the full_page option is what you need to use (or a regular expression, as explained above). This option allows you to add your own header/footer if you so desire. By default, the value is 1. Set it to 0 to output the HTML report with as little HTML as possible. 
 
-    	$p = HTML::Perlinfo->new(
-		    full_page  => 0   # Change value to 1 to get a full HTML page
-	    );
+	$p = HTML::Perlinfo->new(
+		full_page  => 0   # Change value to 1 to get a full HTML page
+	);
 
 =head1 links
 
