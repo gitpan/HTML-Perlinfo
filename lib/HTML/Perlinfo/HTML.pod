@@ -12,10 +12,10 @@ In the perlinfo library, L<HTML::Perlinfo> and L<HTML::Perlinfo::Modules> use th
 
 You can capture the HTML output by assigning it to a scalar. Then you can alter the HTML before printing it or doing something else with it. Here is an example that uses the perlinfo function from L<HTML::Perlinfo>:  
 
-	use HTML::Perlinfo;
+    use HTML::Perlinfo;
 
     my $example = perlinfo();    # Now I can do whatever I want with $example
-   	$example =~ s/Perl/Java/ig;  # Make everyone laugh  
+    $example =~ s/Perl/Java/ig;  # Make everyone laugh  
     print $example;       
 
 Another option is to use object attributes which make altering some HTML elements less helter skelter. 
@@ -27,39 +27,37 @@ These object attributes allow you to change the HTML CSS settings to achieve a s
 Attribute name/Corresponding CSS element
 
  title              / page title (only non-CSS element)
- bg_image 			/ background_image
- bg_position 		/ background_position
- bg_repeat 			/ background_repeat
- bg_attribute 		/ background_attribute 
- bg_color 			/ background_color
- ft_family 			/ font_familty 
- ft_color 			/ font_color
- lk_color 			/ link color
- lk_decoration 		/ link text-decoration  
- lk_bgcolor 		/ link background-color 
- lk_hvdecoration 	/ link hover text-decoration 
- header_bgcolor 	/ table header background-color 
- header_ftcolor 	/ table header font color
- leftcol_bgcolor	/ background-color of leftmost table cell  
- leftcol_ftcolor 	/ font color of left table cell
- rightcol_bgcolor	/ background-color of right table cell  
- rightcol_ftcolor	/ font color of right table cell
+ bg_image           / background_image
+ bg_position        / background_position
+ bg_repeat          / background_repeat
+ bg_attribute       / background_attribute 
+ bg_color           / background_color
+ ft_family          / font_familty 
+ ft_color           / font_color
+ lk_color           / link color
+ lk_decoration      / link text-decoration  
+ lk_bgcolor         / link background-color 
+ lk_hvdecoration    / link hover text-decoration 
+ header_bgcolor     / table header background-color 
+ header_ftcolor     / table header font color
+ leftcol_bgcolor    / background-color of leftmost table cell  
+ leftcol_ftcolor    / font color of left table cell
+ rightcol_bgcolor   / background-color of right table cell  
+ rightcol_ftcolor   / font color of right table cell
 
 =head2 CSS EXAMPLE
 
     $p = HTML::Perlinfo->new(
 		bg_image  => 'http://i104.photobucket.com/albums/m176/perlinfo/camel.gif',
 		bg_repeat => 'yes-repeat'
-	);
-	$p->info_all;
+    );
+    $p->info_all;
 
 =head1 print_htmlhead 
 
 This method prints the head container tags containing the style sheet, along with a few other html tags. It is useful to call this method when full_page is set to 0 and you are piecing together multiple perlinfo pages into one page. For example:
 
-    $m = HTML::Perlinfo::Modules->new(
-        full_page => 0     # Just the bare essentials please
-     );
+    $m = HTML::Perlinfo::Modules->new( full_page => 0 );    # Just the bare essentials please
 
     $m->print_htmlhead;  # Print the beginning of an html document
 
@@ -86,9 +84,7 @@ Of course, you don't have to use the print_htmlhead method. You could insert you
 
 Do you want only a fragment of HTML and not a page with body tags (among other things)? Then the full_page option is what you need to use (or a regular expression, as explained above). This option allows you to add your own header/footer if you so desire. By default, the value is 1. Set it to 0 to output the HTML report with as little HTML as possible. 
 
-	$p = HTML::Perlinfo->new(
-		full_page  => 0   # Change value to 1 to get a full HTML page
-	);
+    $p = HTML::Perlinfo->new( full_page  => 0  ); # Change value to 1 to get a full HTML page
 
 =head1 links
 
@@ -107,6 +103,8 @@ For example, to remove the default links and images in the info_all method, you 
 The example above removes all default links and it even ignores the L<link|HTML::Perlinfo::Modules#link> parameter in the print_modules method of L<HTML::Perlinfo::Modules>.  
 
 The named parameters for the links attribute are 'docs' and 'local' which controls links associated with modules, programs in the Perl utilities section, and the Config section and everywhere else. The value for either parameter can be either '1' or '0'. 
+
+=over
 
 =item docs
 
@@ -127,6 +125,8 @@ Note that this link would only work if you use the perlinfo library from the com
 You can even use 'docs' along with 'local'. 
 
 	$p->info_all( links => [docs=>0,local=>1] )
+
+=back
 
 =head1 NOTES
 

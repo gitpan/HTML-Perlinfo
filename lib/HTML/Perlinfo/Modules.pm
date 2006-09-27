@@ -8,7 +8,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.06';
+$VERSION = '1.07';
 
 sub new {
 
@@ -245,6 +245,7 @@ sub search_dir {
 
   my ($from, $show_only, $core_dir1, $core_dir2) = @_;
 
+  
   my %seen = ();
 
   my @user_dir = (ref($from) eq 'ARRAY') && $show_only ne 'core' ? @{$from} :
@@ -273,6 +274,8 @@ sub search_dir {
 				else { 
 					warn "$element is not a directory"; 
 				}
+
+				push @debug, $element;
 			} 
 			elsif (! -r $element) {
 				if ( grep {$_ eq $element} map {File::Spec->canonpath($_)}@INC) {
@@ -281,6 +284,8 @@ sub search_dir {
 				else { 
 					warn "$element is not a readable directory"; 
 				}
+
+				push @debug, $element;
 			}
 		}
 	}
@@ -436,10 +441,10 @@ HTML::Perlinfo::Modules - Display a lot of module information in HTML format
 
 =head1 SYNOPSIS
 
-	use HTML::Perlinfo::Modules;
+    use HTML::Perlinfo::Modules;
 
-	my $m = HTML::Perlinfo::Modules->new();
-	$m->print_modules;
+    my $m = HTML::Perlinfo::Modules->new();
+    $m->print_modules;
 
 =head1 DESCRIPTION
 
@@ -476,14 +481,16 @@ The code example above will show you the modules in Paco's home directory if any
 	
     # The above line is the equivalent of saying:
     $m->print_modules(
-			from     => \@INC,
-			columns  => ['name','version','desc'],
-			sort_by  => 'name',
-			show_inc => 1
-	 );
+            from     => \@INC,
+            columns  => ['name','version','desc'],
+            sort_by  => 'name',
+            show_inc => 1
+    );
 	
-    # Alternatively, in this case, you could use the HTML::Perlinfo function to achieve the same result:
-    perlinfo(INFO_MODULES); 
+    # Alternatively, in this case, you could use a HTML::Perlinfo method to achieve the same result.
+    # Note that HTML::Perlinfo::Modules inherits all of the HTML::Perlinfo methods
+
+    $m->info_modules; 
 
 The optional named parameters for the print_modules method are listed below.
 
@@ -504,6 +511,9 @@ This parameter allows you to control the table columns in the list of modules. W
 
     # Show version numbers before names
     columns=>['version','name']
+
+    # Default columns are:
+    columns=>['name','version','desc']
   
 The column parameter accepts an array reference containing strings that represent the column names. Those names are:
 
@@ -523,7 +533,9 @@ The module description. The description is from the POD. Note that some modules 
 
 =item path
 
-The full path to the module file on disk.
+The full path to the module file on disk. Printing out the path is especially useful when you want to learn the locations of duplicate modules.
+
+B<Note that you can make this path a link.> This is useful if you want to see the local installation directory of a module in your browser. (From there, you could also look at the contents of the files.) Be aware that this link would only work if you use this module from the command-line and then view the resulting page on the same machine. Hence these local links are not present by default. To learn more about local links, please refer to the L<HTML documentation|HTML::Perlinfo::HTML>. 
 
 =item core
 
@@ -540,10 +552,10 @@ You use this parameter to sort the modules. Values can be either 'version' for v
 This parameter acts like a filter and only shows you the modules (more specifically, the package names) you request. So if, for example, you wanted to only show modules in the Net namspace, you would use the show_only parameter. It is probably the most useful option available for the print_modules method. With this option, you can use HTML::Perlinfo::Modules as a search engine tool for your local Perl modules. Observe:
 
     $m->print_modules(
-                show_only => qr/MYCOMPANY::/i,
-                section   => 'My Company's Custom Perl Modules',
-                show_dir  => 1
-	);
+            show_only => qr/MYCOMPANY::/i,
+            section   => 'My Company's Custom Perl Modules',
+            show_dir  => 1
+    );
 
 The example above will print out every module in the 'MYCOMPANY' namespace in the Perl include path (@INC). The list will be entitled 'My Company's Custom Perl Modules' and because show_dir is set to 1, the list will only show the directories in which these modules were found along with how many are present in each directory. 
 
@@ -565,39 +577,40 @@ The parameter value must be an array reference containing at least 2 elements. T
 
 Examples:
 
-	color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'>Apache modules</a>"],
- 	color => ['#FFD700', qr/CGI::/i] 	
+    color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'> Apache modules </a>"],
+    color => ['#FFD700', qr/CGI::/i] 	
 
 Note: In the second example, there is no third element in array reference, so there will be no color code section in the HTML. Only the color-coded modules (in this case, CGI modules) will be shown. 
 
 Alternatively, you can also change the color of the rows, by setting CSS values in the constructor. For example:
 
-	$m = HTML::Perlinfo::Modules->new(
-			leftcol_bgcolor	 => 'red',
-			rightcol_bgcolor => 'red'
-	);
+    $m = HTML::Perlinfo::Modules->new(
+            leftcol_bgcolor  => 'red',
+            rightcol_bgcolor => 'red'
+    );
 	
-	$m->print_modules( 	show_only 	=> qr/CGI::/i, 
-						show_inc 	=> 0
-	);
+    $m->print_modules( 
+            show_only => qr/CGI::/i, 
+            show_inc  => 0 
+    );
 
-	# This next example does the same thing, but uses the color parameter in the print_modules method
+    # This next example does the same thing, but uses the color parameter in the print_modules method
+
     $m = HTML::Perlinfo::Modules->new();
 
-	$m->print_modules( 	show_only 	=> qr/CGI::/i, 
-					   	color	 	=> ['red', qr/CGI::/i],
-						show_inc	=> 0
-	);
+    $m->print_modules( 
+            show_only => qr/CGI::/i, 
+            color     => ['red', qr/CGI::/i], 
+            show_inc  => 0
+    );
 
 The above example will yield the same HTML results. So which approach should you use? The CSS approach gives you greater control of the HTML presentation. The color parameter, on the other hand, only affects the row colors in the modules list. You cannot achieve that same effect using CSS. For example:
 
-	$m->print_modules(	color	=>	['red', qr/CGI::/i],
-						color	=>  ['red', qr/Apache::/i]
-	);
+    $m->print_modules( color => ['red', qr/CGI::/i], color => ['red', qr/Apache::/i] );
 
 The above example will list B<all of the modules> in @INC with CGI modules colored red and Apache modules colored blue. Another advantage of using the color parameter is that gives you the option to create a "module color coding" section above the modules list. To do so, you simply add a third element in the array reference:
 
-	color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'>Apache modules</a>"],
+    color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'> Apache modules </a>"]
 
 For further information on customizing the HTML, including setting CSS values, please refer to the L<HTML documentation|HTML::Perlinfo::HTML>. 
 
@@ -606,22 +619,20 @@ For further information on customizing the HTML, including setting CSS values, p
 The section parameter lets you put a heading above the module list. Example:  
 
     $m->print_modules(  
-			show_only	=> qr/^Apache::/i,
-            section		=> 'Apache/mod_perl modules',
-			show_dir	=> 1,
-   	);
+            show_only => qr/^Apache::/i,
+            section   => 'Apache/mod_perl modules',
+            show_dir  => 1,
+     );
 
 =head3 full_page
 
 Do you want only a fragment of HTML and not a page with body tags (among other things)? Then the full_page option is what you need to use (or a regular expression, as explained in the L<HTML documentation|HTML::Perlinfo::HTML>). This option allows you to add your own header/footer if you so desire. By default, the value is 1. Set it to 0 to output the HTML report with as little HTML as possible. 
 
-    $m = HTML::Perlinfo::Modules->new(
-		    full_page  => 0   # Change value to 1 to get a full HTML page
-	);
+    $m = HTML::Perlinfo::Modules->new( full_page => 0 );  
+    # You will still get an HTML page but without CSS settings or body tags
+    $m->print_modules; 
 
-    $m->print_modules; # You will still get an HTML page but without CSS settings or body tags
-
-	$m->print_modules( full_page => 1); # Now you will get the complete, default HTML page. 
+    $m->print_modules( full_page => 1 ); # Now you will get the complete, default HTML page. 
 
 Note that the full_page option can be set in either the constructor or the method call. The advantage of setting it in the constructor is that every subsequent method call will have this attribute. (There is no limit to how many times you can call print_modules in a program. If calling the method more than once makes no sense to you, then you need to look at the show_only and from options.) If you set the full_page in the print_modules method, you will override its value in the object.     
 
@@ -631,7 +642,7 @@ By default, every module is linked to its documentation on search.cpan.org. Howe
 
 The parameter value must be an array reference containing two elements. The first element can either be a precompiled regular expression specifying the module(s) to link or the word 'all' which will link all the modules in the list. The second element is the root URL. In the link, the module name will come after the URL. So in the example below, the link for the Apache::Status module would be 'http://www.myexample.com/perldoc/Apache::Status'.
 
-	link => [qr/Apache::/i, 'http://www.myexample.com/perldoc/']
+    link => [qr/Apache::/i, 'http://www.myexample.com/perldoc/']
 
 Further information about linking is in the L<HTML documentation|HTML::Perlinfo::HTML>.
 

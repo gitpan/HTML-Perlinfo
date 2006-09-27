@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.45';
+$VERSION = '1.46';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
