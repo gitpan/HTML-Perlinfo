@@ -119,6 +119,7 @@ sub process_args {
 }
 
 sub error_msg {
+  local $Carp::CarpLevel = $Carp::CarpLevel + 1;
   Carp::croak "User error: $_[0]";
 }
 

@@ -109,7 +109,7 @@ sub print_general {
   $html .= print_table_row(2, "Currently running on", "@{[ (uname)[0..4] ]}");
   $html .= print_table_row(2, "Built for",  "$Config{archname}");
   $html .= print_table_row(2, "Build date",  "$Config{cf_time}");
-  $html .= print_table_row(2, "Perl path", which("perl"));
+  $html .= print_table_row(2, "Perl path", "$^X");
 		  
   $html .= print_table_row(2, "Additional C Compiler Flags",  "$Config{ccflags}");
   $html .= print_table_row(2, "Optimizer/Debugger Flags",  "$Config{optimize}");

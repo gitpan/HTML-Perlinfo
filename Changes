@@ -1,7 +1,13 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.47 Changes:
+        *This is the last release of this module in this namespace.*
+        Bug fixes:
+        - Fixed Carp::croak to report error in the right place
+        - Changed Perl path value in INFO_GENERAL to $^X. Previously it was searching the path.   
+
 1.46 Changes:
-    - Fixed some annoying POD formatting errors
+        - Fixed some annoying POD formatting errors
 
 1.45 Changes:
 	- Updated pod
@@ -20,9 +26,9 @@ Revision history for Perl extension HTML::Perlinfo
 	HTML::Perlinfo::Modules:
 	- Added columns parameter. This allowed me to rewrite a lot of internal code.
 	- Changed color parameter to exclude color section without 3rd element in array ref
-    - Improved pod
-    Bug fixes:
-    - Fixed a bug that excluded links of the config keys in the INFO_CONFIG section
+        - Improved pod
+        Bug fixes:
+        - Fixed a bug that excluded links of the config keys in the INFO_CONFIG section
 
 1.43 Bug fix that breaks old versions:
 	The previous version did not print the content-type header for HTML::Perlinfo::Modules. Upon

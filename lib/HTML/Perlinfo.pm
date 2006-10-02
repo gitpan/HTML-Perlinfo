@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.46';
+$VERSION = '1.47';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -60,6 +60,8 @@ HTML::Perlinfo - Display a lot of Perl information in HTML format
 	perlinfo();
 
 =head1 DESCRIPTION
+
+B<NOTE: THIS IS THE LAST RELEASE OF THIS MODULE IN THIS NAMESPACE. WHEN THE NEXT VERSION APPEARS, OLDER VERSIONS WILL BE DELETED FROM CPAN>
 
 This module outputs a large amount of information about your Perl installation in HTML. So far, this includes information about Perl compilation options, the Perl version, server information and environment, HTTP headers, OS version information, Perl modules, and more. 
 
