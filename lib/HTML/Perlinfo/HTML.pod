@@ -6,8 +6,6 @@ HTML::Perlinfo::HTML - HTML documentation for the perlinfo library
 
 =head1 SUMMARY
 
-B<NOTE: THIS IS THE LAST RELEASE OF THIS MODULE IN THIS NAMESPACE. WHEN THE NEXT VERSION APPEARS, OLDER VERSIONS WILL BE DELETED FROM CPAN>
-
 In the perlinfo library, L<HTML::Perlinfo> and L<HTML::Perlinfo::Modules> use the internal module HTML::Perlinfo::Common for HTML generation. This document provides information on that HTML and its manipulation.  
 
 =head1 CUSTOMIZING THE HTML

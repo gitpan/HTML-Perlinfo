@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+
+1.48 Changes:
+	Removed false disclaimer: "This is the last release ..."
+
 1.47 Changes:
         *This is the last release of this module in this namespace.*
         Bug fixes:

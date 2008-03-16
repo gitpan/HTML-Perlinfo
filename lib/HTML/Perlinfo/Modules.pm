@@ -8,7 +8,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.08';
+$VERSION = '1.09';
 
 sub new {
 
@@ -447,8 +447,6 @@ HTML::Perlinfo::Modules - Display a lot of module information in HTML format
     $m->print_modules;
 
 =head1 DESCRIPTION
-
-B<NOTE: THIS IS THE LAST RELEASE OF THIS MODULE IN THIS NAMESPACE. WHEN THE NEXT VERSION APPEARS, OLDER VERSIONS WILL BE DELETED FROM CPAN>
 
 This module outputs information about your Perl modules in HTML. The information includes a module's name, version, description and location. The HTML presents the module information in B<two sections>, one section is a list of modules and the other is a summary of this list. Both the list and its summary are configurable.  
 

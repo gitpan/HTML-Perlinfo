@@ -3,7 +3,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     NAME              => 'HTML::Perlinfo',
-    VERSION           => '1.47',
+    VERSION           => '1.48',
     PREREQ_PM	      => {
     				File::Which 	 => 0,
 				App::Info   	 => 0,
