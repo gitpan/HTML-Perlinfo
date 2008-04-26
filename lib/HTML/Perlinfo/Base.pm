@@ -5,7 +5,6 @@ use CGI::Carp 'fatalsToBrowser';
 use HTML::Perlinfo::Common;
 use HTML::Perlinfo::General;
 use HTML::Perlinfo::Credits;
-use CGI qw(header);
 use Carp ();
 use warnings;
 use strict;

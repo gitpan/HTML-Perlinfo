@@ -1,14 +1,12 @@
 package HTML::Perlinfo::Common;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(initialize_globals print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_license add_link check_images check_path check_args check_module_args perl_version release process_args error_msg);
+our @EXPORT = qw(initialize_globals print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_license add_link check_path check_args check_module_args perl_version release_date process_args error_msg);
 require Exporter;
 
 use CGI::Carp 'fatalsToBrowser';
 use Carp ();
-use IO::Socket;
-use Module::CoreList;
-use File::Which;
+
 our %links;
 
 %links = ( 
@@ -16,6 +14,103 @@ our %links;
  'local' => 0,
  'docs'  => 1,
 );
+
+
+##### The following is lifted from File::Which 0.05 by Per Einar Ellefsen. 
+##### The check_path sub uses the which sub.
+#############
+use File::Spec;
+
+my $Is_VMS    = ($^O eq 'VMS');
+my $Is_MacOS  = ($^O eq 'MacOS');
+my $Is_DOSish = (($^O eq 'MSWin32') or
+                ($^O eq 'dos')     or
+                ($^O eq 'os2'));
+
+# For Win32 systems, stores the extensions used for
+# executable files
+# For others, the empty string is used
+# because 'perl' . '' eq 'perl' => easier
+my @path_ext = ('');
+if ($Is_DOSish) {
+    if ($ENV{PATHEXT} and $Is_DOSish) {    # WinNT. PATHEXT might be set on Cygwin, but not used.
+        push @path_ext, split ';', $ENV{PATHEXT};
+    }
+    else {
+        push @path_ext, qw(.com .exe .bat); # Win9X or other: doesn't have PATHEXT, so needs hardcoded.
+    }
+}
+elsif ($Is_VMS) { 
+    push @path_ext, qw(.exe .com);
+}
+
+sub which {
+    my ($exec) = @_;
+
+    return undef unless $exec;
+
+    my $all = wantarray;
+    my @results = ();
+    
+    # check for aliases first
+    if ($Is_VMS) {
+        my $symbol = `SHOW SYMBOL $exec`;
+        chomp($symbol);
+        if (!$?) {
+            return $symbol unless $all;
+            push @results, $symbol;
+        }
+    }
+    if ($Is_MacOS) {
+        my @aliases = split /\,/, $ENV{Aliases};
+        foreach my $alias (@aliases) {
+            # This has not been tested!!
+            # PPT which says MPW-Perl cannot resolve `Alias $alias`,
+            # let's just hope it's fixed
+            if (lc($alias) eq lc($exec)) {
+                chomp(my $file = `Alias $alias`);
+                last unless $file;  # if it failed, just go on the normal way
+                return $file unless $all;
+                push @results, $file;
+                # we can stop this loop as if it finds more aliases matching,
+                # it'll just be the same result anyway
+                last;
+            }
+        }
+    }
+
+    my @path = File::Spec->path();
+    unshift @path, File::Spec->curdir if $Is_DOSish or $Is_VMS or $Is_MacOS;
+
+    for my $base (map { File::Spec->catfile($_, $exec) } @path) {
+       for my $ext (@path_ext) {
+            my $file = $base.$ext;
+
+            if ((-x $file or    # executable, normal case
+                 ($Is_MacOS ||  # MacOS doesn't mark as executable so we check -e
+                  ($Is_DOSish and grep { $file =~ /$_$/i } @path_ext[1..$#path_ext])
+                                # DOSish systems don't pass -x on non-exe/bat/com files.
+                                # so we check -e. However, we don't want to pass -e on files
+                                # that aren't in PATHEXT, like README.
+                 and -e _)
+                ) and !-d _)
+            {                   # and finally, we don't want dirs to pass (as they are -x)
+
+
+                    return $file unless $all;
+                    push @results, $file;       # Make list to return later
+            }
+        }
+    }
+    
+    if($all) {
+        return @results;
+    } else {
+        return undef;
+    }
+}
+
+## End File::Which code
 
 sub check_path {
   
@@ -35,8 +130,50 @@ sub perl_version {
   return $version;
 }
 
-sub release {
-  return ($Module::CoreList::released{$]}) ? $Module::CoreList::released{$]} : "unknown";
+sub release_date {
+
+# when things escaped
+  %released = (
+    5.000    => '1994-10-17',
+    5.001    => '1995-03-14',
+    5.002    => '1996-02-96',
+    5.00307  => '1996-10-10',
+    5.004    => '1997-05-15',
+    5.005    => '1998-07-22',
+    5.00503  => '1999-03-28',
+    5.00405  => '1999-04-29',
+    5.006    => '2000-03-22',
+    5.006001 => '2001-04-08',
+    5.007003 => '2002-03-05',
+    5.008    => '2002-07-19',
+    5.008001 => '2003-09-25',
+    5.009    => '2003-10-27',
+    5.008002 => '2003-11-05',
+    5.006002 => '2003-11-15',
+    5.008003 => '2004-01-14',
+    5.00504  => '2004-02-23',
+    5.009001 => '2004-03-16',
+    5.008004 => '2004-04-21',
+    5.008005 => '2004-07-19',
+    5.008006 => '2004-11-27',
+    5.009002 => '2005-04-01',
+    5.008007 => '2005-05-30',
+    5.009003 => '2006-01-28',
+    5.008008 => '2006-01-31',
+    5.009004 => '2006-08-15',
+    5.009005 => '2007-07-07',
+    5.010000 => '2007-12-18',
+   );
+	
+  # Do we have Module::Corelist
+  eval{require Module::CoreList};
+  if ($@) { # no
+     return ($released{$]}) ? $released{$]} : "unknown";
+  }
+  else {    # yes
+     return ($Module::CoreList::released{$]}) ? $Module::CoreList::released{$]} : "unknown";
+  }	  
+ 
 }
 
 sub check_args { 
@@ -296,20 +433,6 @@ sub print_license {
 }
 
 
-sub check_images {
-
-	return 0 unless $links{'all'};
-
-	  local($^W) = 0;
-	  my $sock = IO::Socket::INET->new(	PeerAddr  => $_[0],  
-		  				PeerPort  => 80,
-						PeerProto => 'tcp',
-					        Timeout   => 5) || return 0;	 
-	  $sock->close;
-	  return 1;
-
-  }
-  
 sub add_link {
 
 	my ($type, $value, $link) = @_;
@@ -339,21 +462,6 @@ sub add_link {
           }
 		return qq~ <a href="http://search.cpan.org/perldoc?$value" 
 		title="Click here to see $value on CPAN [Opens in a new window]" target="_blank">$value</a> ~;
-	}
-	elsif ($type eq "ora") {
-		if ($value eq "camel1") {
-			return  qq~ <a href="http://www.perl.com/"><img border="0" src="http://i104.photobucket.com/albums/m176/perlinfo/sm_perl_id_313_bk.gif" alt="Perl Logo" title="Perl Logo" /></a> ~;
-		}
-		elsif ($value eq "camel2") {
-			return qq~ <a href="http://www.perl.com/"><img border="0" src="http://i104.photobucket.com/albums/m176/perlinfo/powered_by_perl.gif" alt="Perl logo" title="Perl Logo" /></a> ~; 
-
-		}
-                else {
-			return qq~ <font size="1">The use of a camel image in association with Perl is a trademark of <a href="http://www.oreilly.com">OReilly Media, Inc.</a>  Used with permission.</font><p /> ~;
-		}
-	}
-	elsif ($type eq 'apache') {
-		return qq~ <a href="http://perl.apache.org/"><img src='http://i104.photobucket.com/albums/m176/perlinfo/button-110x30.gif' border=0 alt="mod_perl -- Speed, Power, Scalability"></a> ~;
 	}
 	elsif ($type eq "config") {
       		return $value unless $links{'docs'};

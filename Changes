@@ -1,6 +1,15 @@
 Revision history for Perl extension HTML::Perlinfo 
 
 
+1.49 Changes:
+	-Makefile.PL changes: added use 5.006 and made App::Info optional
+	-Removed the following modules: Module::CoreList, IO::Socket, File::Which, CGI
+	-Added File::Which code to Common.pm, modified Apache.pm to make App::Info optional, 
+         and now HTML::Perlinfo no longer requires non-core modules
+	-Removed all images (ORA and mod_perl) and associated code. Simplicity is better than flash.
+	Bug fixes: 
+	-Fixed bug in Apache.pm that caused warnings of uninitialized value in concatenation (.) or string
+
 1.48 Changes:
 	Removed false disclaimer: "This is the last release ..."
 

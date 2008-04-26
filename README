@@ -1,4 +1,4 @@
-HTML-Perlinfo version 1.48
+HTML-Perlinfo version 1.49
 =========================
 
 NAME
@@ -18,11 +18,8 @@ To install this module type the following:
 
 DEPENDENCIES
 
-This module requires these other modules and libraries:
+None
 
-File::Which
-App::Info
-Module::CoreList
 
 COPYRIGHT AND LICENCE
 Copyright (C) 2006 Mike Accardo <mikeaccardo@yahoo.com>

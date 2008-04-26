@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.48';
+$VERSION = '1.49';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -155,11 +155,7 @@ Displaying detailed server information on the internet is not a good idea and HT
 
 =head1 REQUIREMENTS
 
-HTML::Perlinfo requires only 2 non-core modules. These 2 modules are:
-
-L<App::Info> - for some HTTPD information
-
-L<File::Which> - for searching the path
+HTML::Perlinfo does not require any non-core modules. 
 
 =head1 NOTES
 

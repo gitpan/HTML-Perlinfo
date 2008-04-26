@@ -6,7 +6,6 @@ use CGI::Carp 'fatalsToBrowser';
 use POSIX qw(uname);
 use Config qw(%Config config_sh);
 use Net::Domain qw(hostname);
-use File::Which;
 use File::Spec;
 use HTML::Perlinfo::Common;
 use HTML::Perlinfo::Apache;
@@ -99,9 +98,7 @@ sub print_httpd {
 sub print_general {
 
   my $html = print_box_start(1);
-  $html .= add_link('ora', 'camel1') if check_images('http://i104.photobucket.com');
-  #$html .= add_link('ora', 'camel1');
-  $html .= sprintf("<h1 class=\"p\">Perl Version %s</h1><br clear=all>Release date: %s", perl_version(), release());
+  $html .= sprintf("<h1 class=\"p\">Perl Version %s</h1><br clear=all>Release date: %s", perl_version(), release_date());
 		 
   $html .= print_box_end();
 
@@ -143,21 +140,11 @@ sub print_general {
   }
 $html .= print_table_end();
 
-  # Powered by Perl
-  # Need to check for net connection
   $html .= print_box_start(0);
 
   
-  if (check_images('http://i104.photobucket.com')) {
-    $html .= add_link('ora', 'camel2');
-    $html .= "This is perl, v$Config{version} built for $Config{archname}<br />Copyright (c) 1987-@{[ sprintf '%d', (localtime)[5]+1900]}, Larry Wall";
-    $html .= "</td></tr></table>";
-    $html .= add_link('ora', 'copyright');
-  }
-  else {
     $html .= "This is perl, v$Config{version} built for $Config{archname}<br />Copyright (c) 1987-@{[ sprintf '%d', (localtime)[5]+1900]}, Larry Wall";
     $html .= print_box_end();
-  }
 
   $html .= print_hr();
   if ($HTML::Perlinfo::Common::links{'all'}) {
@@ -195,7 +182,7 @@ END_OF_HTML
 	   print_section("Mail"),
 	   print_table_start(),
 	   print_table_row(2, 'SMTP', hostname()),
-	   print_table_row(2, 'sendmail_path', which("sendmail")),
+	   print_table_row(2, 'sendmail_path', check_path("sendmail")),
 	   print_table_end(),
 
 	   print_httpd(),

@@ -94,11 +94,11 @@ To manipulate links in the perlinfo library, you can use the links attribute in 
 
 There are several arguments (in an array reference) you can supply to the links attribute.
 
-The number 1 turns on all default links (and the camel images if applicable) and 0 will remove them.
+The number 1 turns on all default links and 0 will remove them.
 
-For example, to remove the default links and images in the info_all method, you would say:
+For example, to remove the default links in the info_all method, you would say:
 	
-	$p->info_all( links=>[0] ); # contains no images or links. Good for printing!
+	$p->info_all( links=>[0] ); # contains no links. Good for printing!
 
 The example above removes all default links and it even ignores the L<link|HTML::Perlinfo::Modules#link> parameter in the print_modules method of L<HTML::Perlinfo::Modules>.  
 
