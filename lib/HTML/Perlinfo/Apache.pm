@@ -55,7 +55,6 @@ sub print_apache {
 				if (defined $ENV{'SERVER_SOFTWARE'} && $ENV{'SERVER_SOFTWARE'} =~ /\d+[\.\d]*/); 
 	} 
 
-no warnings "all";
 	return join '', print_table_row(2, "Apache Version", "$version"),
                         (defined($ENV{'SERVER_NAME'}) && defined($ENV{'SERVER_PORT'})) ?
 			print_table_row(2, "Hostname:Port", "$ENV{'SERVER_NAME'} : $ENV{'SERVER_PORT'}"):
@@ -91,11 +90,9 @@ sub print_modperl {
 
 sub print_apache_environment {
 
-	no warnings "all";
 
-	return join '', print_table_row(2, "DOCUMENT_ROOT", $ENV{'DOCUMENT_ROOT'}),
-
-	print_table_row(2, "HTTP_ACCEPT", $ENV{'HTTP_ACCEPT'}),
+	return join '', print_table_row(2, "DOCUMENT_ROOT", $ENV{'DOCUMENT_ROOT'}), 
+			print_table_row(2, "HTTP_ACCEPT", $ENV{'HTTP_ACCEPT'}),
 			print_table_row(2, "HTTP_ACCEPT_CHARSET", $ENV{'HTTP_ACCEPT_CHARSET'}),
 			print_table_row(2, "HTTP_ACCEPT_ENCODING", $ENV{'HTTP_ACCEPT_ENCODING'}),
 			print_table_row(2, "HTTP_ACCEPT_LANGUAGE", $ENV{'HTTP_ACCEPT_LANGUAGE'}),

@@ -1,6 +1,12 @@
 Revision history for Perl extension HTML::Perlinfo 
 
 
+1.50 Changes:
+	-Added perlinfo commandline utility. 
+	Bug fixes:
+	-Added missing section title to info_modules
+	-HTML::Perlinfo:Modules: italicized the word 'unknown' for unknown module versions 
+
 1.49 Changes:
 	-Makefile.PL changes: added use 5.006 and made App::Info optional
 	-Removed the following modules: Module::CoreList, IO::Socket, File::Which, CGI

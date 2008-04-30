@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.49';
+$VERSION = '1.50';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -161,7 +161,7 @@ HTML::Perlinfo does not require any non-core modules.
 
 Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
 
-Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. If you decide to use this module in a CGI script, make sure you print out the content-type header beforehand.  
+Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. If you decide to use this module in a CGI script, B<make sure you print out the content-type header beforehand>.  
 
 =head1 BUGS
 
@@ -183,7 +183,7 @@ L<Config>. You can also use "perl -V" to see a configuration summary at the comm
 
 L<Apache::Status>, L<App::Info>, L<Probe::Perl>, L<Module::CoreList>, L<Module::Info>, among others.
 
-Also included in the Perlinfo distribution: L<HTML::Perlinfo::Modules> 
+Also included in the Perlinfo distribution: L<perlinfo>, L<HTML::Perlinfo::Modules> 
 
 =head1 AUTHOR
 
@@ -191,7 +191,7 @@ Mike Accardo <mikeaccardo@yahoo.com>
 
 =head1 COPYRIGHT
 
-   Copyright (c) 2006, Mike Accardo. All Rights Reserved.
+   Copyright (c) 2004-8, Mike Accardo. All Rights Reserved.
  This module is free software. It may be used, redistributed
 and/or modified under the terms of the Perl Artistic License.
 

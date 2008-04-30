@@ -92,7 +92,7 @@ sub print_httpd {
  sub print_thesemodules {
     $m = HTML::Perlinfo::Modules->new();
     return $m->print_modules(show_only=>$_[0], full_page=>0) if $_[0] eq 'core';
-    return $m->print_modules(full_page=>0);
+    return $m->print_modules(section=>'All Perl modules', full_page=>0);
  }
 
 sub print_general {

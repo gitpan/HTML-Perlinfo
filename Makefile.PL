@@ -12,8 +12,9 @@ if ($@) {
 
 WriteMakefile(
     NAME              => 'HTML::Perlinfo',
-    VERSION           => '1.49',
+    VERSION           => '1.50',
     PREREQ_PM	      => \%prereqs,
+    EXE_FILES         => [ 'perlinfo' ],
 
     AUTHOR   => 'Mike Accardo (mikeaccardo@yahoo.com)',
     

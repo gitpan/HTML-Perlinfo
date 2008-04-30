@@ -8,7 +8,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.09';
+$VERSION = '1.10';
 
 sub new {
 
@@ -119,7 +119,7 @@ sub module_info {
        };
        $mod_version = eval($eval);
        # Again let us be nice here.
-       $mod_version = 'unknown' if (not defined $mod_version) || ($@);
+       $mod_version = '<i>unknown</i>' if (not defined $mod_version) || ($@);
        $mod_version =~ s/^\s+|\s+$//;
       }
      }
@@ -139,7 +139,7 @@ sub module_info {
  
    close MOD;
    return 0 if (! $mod_name || $show_only && ref $show_only && lc($mod_name) !~ $show_only);
-   $mod_version = 'unknown' if !($mod_version) || ($mod_version !~ /^[\.\d+_]+$/);
+   $mod_version = '<i>unknown</i>' if !($mod_version) || ($mod_version !~ /^[\.\d+_]+$/);
    $mod_desc = "<i>No description found</i>" unless $mod_desc;
    return { 'name' => $mod_name, 'version' => $mod_version, 'desc' => $mod_desc };
 }
@@ -668,7 +668,7 @@ If you decide to use this module in a CGI script, make sure you print out the co
 
 =head1 SEE ALSO
 
-L<HTML::Perlinfo>, L<Module::Info>, L<Module::CoreList>.
+L<HTML::Perlinfo>, L<perlinfo>, L<Module::Info>, L<Module::CoreList>.
 
 =head1 AUTHOR
 
@@ -676,7 +676,7 @@ Mike Accardo <mikeaccardo@yahoo.com>
 
 =head1 COPYRIGHT
 
-   Copyright (c) 2006, Mike Accardo. All Rights Reserved.
+   Copyright (c) 2006-8, Mike Accardo. All Rights Reserved.
  This module is free software. It may be used, redistributed
 and/or modified under the terms of the Perl Artistic License.
 
