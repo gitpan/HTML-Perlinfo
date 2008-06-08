@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.50';
+$VERSION = '1.51';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -159,25 +159,46 @@ HTML::Perlinfo does not require any non-core modules.
 
 =head1 NOTES
 
+INFO_APACHE relies on environment variables. It's possible to get more Apache information using App::Info. 
+
 Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
 
-Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. If you decide to use this module in a CGI script, B<make sure you print out the content-type header beforehand>.  
+Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. If you decide to use this module in a CGI script, B<make sure you print out the content-type header beforehand>. For example:
+
+	use HTML::Perlinfo;
+
+	print "Content-type: text/html\n\n";
+	perlinfo();
+
+I prefer to use the header function from the CGI module:
+
+	use HTML::Perlinfo;
+	use CGI qw(header);
+
+	print header;
+	perlinfo();
+
+In this example, I am flushing the buffer because I know that there will be a lot of modules:
+
+	use HTML::Perlinfo;
+	use CGI qw(header);
+
+	$|++;
+
+	print header;
+	perlinfo(INFO_MODULES);
+
+HTML::Perlinfo stopped printing the header automatically as of version 1.43.  
 
 =head1 BUGS
+
+A bug exists involving POST requests for options INFO_ALL, INFO_CONFIG, INFO_MODULES, and INFO_LICENSE. For example, try perlinfo when submitting a form with a POST method. It will hang. No patch is available at this time. Patches welcome!
 
 Please report any bugs or feature requests to C<bug-html-perlinfo@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=HTML-Perlinfo>.
 I will be notified, and then you'll automatically be notified of progress on your bug as I make changes.
 
 =head1 SEE ALSO
-
-Perl Diver and Perl Digger are free CGI scripts that offer similar information.  
-
-Perl Diver:  L<http://www.scriptsolutions.com/programs/free/perldiver/>
-
-Perl Digger: L<http://sniptools.com/perldigger>
-
-Other modules worth mentioning:
 
 L<Config>. You can also use "perl -V" to see a configuration summary at the command-line.
 

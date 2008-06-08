@@ -5,23 +5,13 @@ use strict;
 use CGI::Carp 'fatalsToBrowser';
 use HTML::Perlinfo::Common;
 
-my ($apache,$appInstalled);
-eval{require App::Info::HTTPD::Apache};
-unless ($@) {
-	
-	use App::Info::HTTPD::Apache;
-	$apache = App::Info::HTTPD::Apache->new();
-	$appInstalled++;
-}
 
 
 sub new {
     my %apache;
     my $env  = ( $ENV{SERVER_SOFTWARE} || "" ) =~ /apache/i;
-    my $info = $appInstalled ? App::Info::HTTPD::Apache->new()->installed : 0;
     my $mp   = exists $ENV{MOD_PERL};
     $apache{'env'}  = $env;
-    $apache{'info'} = $info;
     $apache{'mp'}   = $mp;
     bless \%apache;
 }
@@ -38,32 +28,18 @@ sub print_apache {
 	
 	my $self = shift;
         my @mods;
-	my  ($version, $user, $group, $root, $hostname, $port, $mp_status) = ("<i>Not detected</i>") x 7;
+	my  ($version, $hostname, $port, $mp_status) = ("<i>Not detected</i>") x 7;
 
 	$mp_status = 'enabled' if $self->has qw(mp);
-	if ($self->has qw(info)) {
-		$version =  $apache->version     if defined $apache->version; 
-		$user    =  $apache->user        if defined $apache->user;
-		$group   =  $apache->group       if defined $apache->group;
-		$root    =  $apache->httpd_root  if defined $apache->httpd_root;
-                $port    =  $apache->port        if defined $apache->port;
-		@mods    =  $apache->static_mods if defined $apache->static_mods;
-	} 
-	else {
 	
 	  ($version) = $ENV{'SERVER_SOFTWARE'} =~ /(\d+[\.\d]*)/ 
 				if (defined $ENV{'SERVER_SOFTWARE'} && $ENV{'SERVER_SOFTWARE'} =~ /\d+[\.\d]*/); 
-	} 
+	
 
 	return join '', print_table_row(2, "Apache Version", "$version"),
                         (defined($ENV{'SERVER_NAME'}) && defined($ENV{'SERVER_PORT'})) ?
 			print_table_row(2, "Hostname:Port", "$ENV{'SERVER_NAME'} : $ENV{'SERVER_PORT'}"):
-      			print_table_row(2, "Hostname:Port", "$hostname : $port"),
-			print_table_row(2, "User/Group", "$user / $group"),
-			print_table_row(2, "Server Root", "$root"),
-			($self->has qw(info) && defined $apache->static_mods) ?
-			print_table_row(2, "Loaded Modules", "@mods"):
-			print_table_row(2, "Loaded Modules", "<i>Not detected</i>"),
+			print_table_row(2, "Hostname:Port", "$hostname : $port"),
 			print_table_row(2, "mod_perl", "$mp_status");
 }
 
@@ -122,3 +98,4 @@ sub print_apache_environment {
 
 }
 1;
+

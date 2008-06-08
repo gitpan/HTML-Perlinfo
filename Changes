@@ -1,5 +1,14 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.51 Changes
+	INFO_APACHE changes:
+	-Removed App::Info. INFO_APACHE now relies 100% on environment variables.
+	-Due to this change, less Apache information is displayed. 
+	-Modified Makefile.PL, since App::Info is no longer optional.
+ 
+	-Improved error checking for perlinfo utility. 
+	-Removed underscores in INFO_VARIABLES. 
+	-Improved POD in Perlinfo.pm, added bug notice.
 
 1.50 Changes:
 	-Added perlinfo commandline utility. 

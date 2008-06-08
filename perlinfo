@@ -6,14 +6,18 @@ use Pod::Usage;
 use strict;
 use warnings;
 
-my $version = "1.00";
+my $version = "1.01";
 my %Opts;
 
-GetOptions(\%Opts, qw[ help|? version all i:s c:s m:s a:s v:s ] ) 
+if ( !@ARGV ) {
+    pod2usage(0);
+}
+
+GetOptions(\%Opts, qw[ help|? version all i:s c:s m:s e:s ] ) 
 	or die pod2usage(0);
 
 pod2usage(1) if $Opts{help};
-#pod2usage(-verbose=>2) if $Opts{help};
+
 
 if ($Opts{version}) {
   print STDERR "perlinfo version $version\n";
@@ -25,7 +29,7 @@ if ($Opts{version}) {
 my %hok = (
       i => { o=> 'INFO_ALL',      f=>'perlinfo.html'},
       c => { o=> 'INFO_CONFIG',   f=>'perlconfig.html'},
-      v => { o=> 'INFO_VARIABLES',f=>'variables.html'},
+      e => { o=> 'INFO_VARIABLES',f=>'variables.html'},
       m => { o=> 'INFO_MODULES',  f=>'perlmodules.html'},
   );
 
@@ -75,7 +79,7 @@ See L<HTML::Perlinfo> for one.
 =head1 SYNOPSIS
 
     perlinfo -i
-    perlinfo [-help] [-version] [-all] [-i|-c|-m|-v] <FileName> ...
+    perlinfo [-help] [-version] [-all] [-i|-c|-m|-e] <FileName> ...
 
 =head1 OPTIONS
 
@@ -86,7 +90,7 @@ All options (except for I<help> and I<version>) use the perlinfo function to pro
   -i   | INFO_ALL        | perlinfo.html
   -c   | INFO_CONFIG     | perlconfig.html
   -m   | INFO_MODULES    | perlmodules.html
-  -v   | INFO_VARIABLES  | variables.html 
+  -e   | INFO_VARIABLES  | variables.html 
 
 You can specify your own file name, including the absolute path name, after the flag.
 
@@ -112,7 +116,7 @@ perlinfo and HTML::Perlinfo versions
 
    'Saved file perlinfo.html'
 
-   perlfino -i /home/paco/www/perl-info.html
+   perlinfo -i /home/paco/www/perl-info.html
 
    'Saved file /home/paco/www/perl-info.html' 
 

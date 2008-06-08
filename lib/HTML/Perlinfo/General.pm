@@ -33,7 +33,7 @@ sub print_variables {
 	return join '', print_section("Environment Variables"),
 		  	print_table_start(),
 		  	print_table_header(2, "Variable", "Value"),
-		  	((defined($ENV{'SERVER_SOFTWARE'})) ?  perl_print_gpcse_array("_SERVER") : perl_print_gpcse_array("_ENV",)),
+		  	((defined($ENV{'SERVER_SOFTWARE'})) ?  perl_print_gpcse_array("SERVER") : perl_print_gpcse_array("ENV",)),
 		  	print_table_end();
 }
 
@@ -205,3 +205,4 @@ END_OF_HTML
    return $html;
 }	  
 1;
+
