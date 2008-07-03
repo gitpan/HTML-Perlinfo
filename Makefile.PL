@@ -4,7 +4,7 @@ use ExtUtils::MakeMaker;
 
 WriteMakefile(
     NAME              => 'HTML::Perlinfo',
-    VERSION           => '1.51',
+    VERSION           => '1.52',
     EXE_FILES         => [ 'perlinfo' ],
 
     AUTHOR   => 'Mike Accardo (mikeaccardo@yahoo.com)',

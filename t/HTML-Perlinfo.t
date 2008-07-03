@@ -8,14 +8,13 @@
 use Test;
 use strict;
 use warnings;
-BEGIN { plan tests => 5};
+BEGIN { plan tests => 4};
 
 use HTML::Perlinfo;
 use HTML::Perlinfo::Modules;
 #########################
 
 ok ( test('VARIABLES') );
-ok ( test('APACHE') );
 ok ( test('CREDITS') );
 ok ( test('LICENSE') );
 ok ( test_mods() );
@@ -34,7 +33,7 @@ sub test {
 sub test_mods {
   my $html;
   my $m = HTML::Perlinfo::Modules->new( full_page => 0 );
-  eval { $html = $m->print_modules( show_only=>qr/File::Spec/i, columns=>['name']); };
+  eval { $html = $m->print_modules( show_only=>['File::Spec'], columns=>['name']); };
   die $@ if $@;
   return 1;
 }

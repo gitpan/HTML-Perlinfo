@@ -3,6 +3,7 @@ package HTML::Perlinfo::General;
 use base qw(Exporter);
 our @EXPORT = qw(print_httpd print_thesemodules print_config print_variables print_general); 
 use CGI::Carp 'fatalsToBrowser';
+use CGI qw(url_param param);
 use POSIX qw(uname);
 use Config qw(%Config config_sh);
 use Net::Domain qw(hostname);
@@ -15,6 +16,21 @@ sub perl_print_gpcse_array  {
 	  my $html;
 	  my($name) = @_;
 	  my ($gpcse_name, $gpcse_value);
+	  #POST names should be param() and get in url_param()
+	  if (defined($ENV{'QUERY_STRING'}) && length($ENV{'QUERY_STRING'}) >= 1) {
+            foreach(url_param()) { $html .= print_table_row(2, "GET[\"$_\"]", url_param($_)); }
+	  }
+	  if (defined($ENV{'CONTENT_LENGTH'})) {
+             foreach(param()) { $html .= print_table_row(2, "POST[\"$_\"]", param($_)); }	     
+	  }	  
+          if (defined($ENV{'HTTP_COOKIE'})) {
+             $cookies = $ENV{'HTTP_COOKIE'};
+             @cookies = split(';',$cookies);
+             foreach (@cookies) {
+	       ($k,$v) = split('=',$_);
+	       $html .= print_table_row(2, "COOKIE[\"$k\"]", "$v");
+	     }	  
+          }
 	  foreach my $key (sort(keys %ENV))
 	  {
 		  $gpcse_name = "$name" . '["' . "$key" . '"]';
@@ -23,6 +39,8 @@ sub perl_print_gpcse_array  {
 		  } else {
 			  $gpcse_value = "<i>no value</i>";
 		  }
+		  
+		  
 		  $html .= print_table_row(2, "$gpcse_name", "$gpcse_value");
 	  }
 	return $html;
@@ -30,7 +48,7 @@ sub perl_print_gpcse_array  {
 
 sub print_variables {
 
-	return join '', print_section("Environment Variables"),
+	return join '', print_section("Environment"),
 		  	print_table_start(),
 		  	print_table_header(2, "Variable", "Value"),
 		  	((defined($ENV{'SERVER_SOFTWARE'})) ?  perl_print_gpcse_array("SERVER") : perl_print_gpcse_array("ENV",)),
@@ -70,7 +88,8 @@ sub print_config_sh {
 }
 
 sub print_httpd {
-
+   
+  return unless (defined $ENV{'SERVER_SOFTWARE'} && $ENV{'SERVER_SOFTWARE'} =~ /apache/i);
   my $a = HTML::Perlinfo::Apache->new();
 
   my $html .= print_section("Apache");

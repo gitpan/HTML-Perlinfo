@@ -8,7 +8,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.10';
+$VERSION = '1.11';
 
 sub new {
 
@@ -18,19 +18,21 @@ sub new {
     $class->SUPER::new(%params);
 
 }
+
 sub module_color_check {
 
 	my ($module_name, $color_specs) = @_;
         if (defined $color_specs && ref($color_specs->[0]) eq 'ARRAY') {
           foreach (@{ $color_specs }) {
-            return $_->[0] if lc($module_name) =~ $_->[1]; 
+            return $_->[0] if (match_string($module_name,$_->[1])==1); 
           }
         }
         else {
-	      return $color_specs->[0] if (defined $color_specs && lc($module_name) =~ $color_specs->[1]);
+	    return $color_specs->[0] if (defined $color_specs && match_string($module_name,$color_specs->[1])==1);
 	}
 	return 0;
 }
+
 
 sub sort_modules {
 
@@ -138,7 +140,7 @@ sub module_info {
  }
  
    close MOD;
-   return 0 if (! $mod_name || $show_only && ref $show_only && lc($mod_name) !~ $show_only);
+   return 0 if (! $mod_name || $show_only && ref $show_only && (match_string($mod_name, $show_only) == 0));
    $mod_version = '<i>unknown</i>' if !($mod_version) || ($mod_version !~ /^[\.\d+_]+$/);
    $mod_desc = "<i>No description found</i>" unless $mod_desc;
    return { 'name' => $mod_name, 'version' => $mod_version, 'desc' => $mod_desc };
@@ -552,14 +554,22 @@ You use this parameter to sort the modules. Values can be either 'version' for v
 This parameter acts like a filter and only shows you the modules (more specifically, the package names) you request. So if, for example, you wanted to only show modules in the Net namspace, you would use the show_only parameter. It is probably the most useful option available for the print_modules method. With this option, you can use HTML::Perlinfo::Modules as a search engine tool for your local Perl modules. Observe:
 
     $m->print_modules(
-            show_only => qr/MYCOMPANY::/i,
+            show_only => ['MYCOMPANY::'],
             section   => 'My Company's Custom Perl Modules',
             show_dir  => 1
     );
 
 The example above will print out every module in the 'MYCOMPANY' namespace in the Perl include path (@INC). The list will be entitled 'My Company's Custom Perl Modules' and because show_dir is set to 1, the list will only show the directories in which these modules were found along with how many are present in each directory. 
 
-In addition to a precompiled regular expression, show_only also accepts the word 'core', a value that will show you all of the core Perl modules (in the installarchlib and installprivlib directories from the config file). 
+You can add namespaces to the array reference:
+
+    $m->print_modules(
+            show_only => ['MYCOMPANY::', 'Apache::'],
+            section   => 'My Company's Custom Perl Modules & Apache Modules',
+            show_dir  => 1
+    );
+
+In addition to an array reference, show_only also accepts the word 'core', a value that will show you all of the core Perl modules (in the installarchlib and installprivlib directories from the config file). 
 
 =head3 show_inc
 
@@ -573,14 +583,12 @@ The default value is 0. Setting this parameter to 1 will only show you the direc
 
 This parameter allows you to highlight modules with different colors. Highlighting specific modules is a good way to draw attention to them. 
 
-The parameter value must be an array reference containing at least 2 elements. The first element is the color itself which can be either a hex code like #FFD700 or the name of the color. The second element, a precompiled regular expression, specifies the module(s) to color. And the third, optional element, in the array reference acts as a label in the color code section. This final element can even be a link if you so desire. 
+The parameter value must be an array reference containing at least 2 elements. The first element is the color itself which can be either a hex code like #FFD700 or the name of the color. The second element specifies the module(s) to color. And the third, optional element, in the array reference acts as a label in the color code section. This final element can even be a link if you so desire. 
 
 Examples:
 
-    color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'> Apache modules </a>"],
-    color => ['#FFD700', qr/CGI::/i] 	
-
-Note: In the second example, there is no third element in array reference, so there will be no color code section in the HTML. Only the color-coded modules (in this case, CGI modules) will be shown. 
+    color => ['red', 'Apache::'],
+    color => ['#FFD700', 'CGI::'] 	
 
 Alternatively, you can also change the color of the rows, by setting CSS values in the constructor. For example:
 
@@ -590,7 +598,7 @@ Alternatively, you can also change the color of the rows, by setting CSS values 
     );
 	
     $m->print_modules( 
-            show_only => qr/CGI::/i, 
+            show_only => 'CGI::', 
             show_inc  => 0 
     );
 
@@ -599,18 +607,16 @@ Alternatively, you can also change the color of the rows, by setting CSS values 
     $m = HTML::Perlinfo::Modules->new();
 
     $m->print_modules( 
-            show_only => qr/CGI::/i, 
-            color     => ['red', qr/CGI::/i], 
+            show_only => ['CGI::'], 
+            color     => ['red', 'CGI::'], 
             show_inc  => 0
     );
 
 The above example will yield the same HTML results. So which approach should you use? The CSS approach gives you greater control of the HTML presentation. The color parameter, on the other hand, only affects the row colors in the modules list. You cannot achieve that same effect using CSS. For example:
 
-    $m->print_modules( color => ['red', qr/CGI::/i], color => ['red', qr/Apache::/i] );
+    $m->print_modules( color => ['red', 'CGI::'], color => ['red', 'Apache::'] );
 
-The above example will list B<all of the modules> in @INC with CGI modules colored red and Apache modules colored blue. Another advantage of using the color parameter is that gives you the option to create a "module color coding" section above the modules list. To do so, you simply add a third element in the array reference:
-
-    color => ['red', qr/Apache::/i, "<a href='http://perl.apache.org'> Apache modules </a>"]
+The above example will list B<all of the modules> in @INC with CGI modules colored red and Apache modules colored blue.
 
 For further information on customizing the HTML, including setting CSS values, please refer to the L<HTML documentation|HTML::Perlinfo::HTML>. 
 
@@ -619,7 +625,7 @@ For further information on customizing the HTML, including setting CSS values, p
 The section parameter lets you put a heading above the module list. Example:  
 
     $m->print_modules(  
-            show_only => qr/^Apache::/i,
+            show_only => ['Apache::'],
             section   => 'Apache/mod_perl modules',
             show_dir  => 1,
      );
@@ -640,10 +646,18 @@ Note that the full_page option can be set in either the constructor or the metho
 
 By default, every module is linked to its documentation on search.cpan.org. However some modules, such as custom modules, would not be in CPAN and their link would not show any documentation. With the 'link' parameter you can override the CPAN link with you own URL.  
 
-The parameter value must be an array reference containing two elements. The first element can either be a precompiled regular expression specifying the module(s) to link or the word 'all' which will link all the modules in the list. The second element is the root URL. In the link, the module name will come after the URL. So in the example below, the link for the Apache::Status module would be 'http://www.myexample.com/perldoc/Apache::Status'.
+The parameter value must be an array reference containing two elements. The first element can either be a string specifying the module(s) to link or an array reference containing strings or the word 'all' which will link all the modules in the list. The second element is the root URL. In the link, the module name will come after the URL. So in the example below, the link for the Apache::Status module would be 'http://www.myexample.com/perldoc/Apache::Status'.
 
-    link => [qr/Apache::/i, 'http://www.myexample.com/perldoc/']
+    link => ['Apache::', 'http://www.myexample.com/perldoc/']
 
+    # Another example
+    my $module = HTML::Perlinfo::Modules
+            ->new
+            ->print_modules( show_only => ['CGI::','File::','HTML::'],  
+                             link => ['HTML::', 'http://www.html-example.com/perldoc/'],  
+                             link => [['CGI::','File::'], 'http://www.examples.com/perldoc/']  );
+			     
+			     
 Further information about linking is in the L<HTML documentation|HTML::Perlinfo::HTML>.
 
 =head1 CUSTOMIZING THE HTML

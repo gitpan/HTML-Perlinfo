@@ -1,7 +1,7 @@
 package HTML::Perlinfo::Common;
 
 our @ISA = qw(Exporter);
-our @EXPORT = qw(initialize_globals print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_license add_link check_path check_args check_module_args perl_version release_date process_args error_msg);
+our @EXPORT = qw(initialize_globals print_table_colspan_header print_table_row print_table_color_start print_table_color_end print_color_box print_table_row_color print_table_start print_table_end print_box_start print_box_end print_hr print_table_header print_section print_license add_link check_path check_args check_module_args perl_version release_date process_args error_msg match_string);
 require Exporter;
 
 use CGI::Carp 'fatalsToBrowser';
@@ -119,6 +119,19 @@ sub check_path {
 
 }
 
+sub match_string {
+ my($module_name, $string) = @_;
+ 
+ my $result = 0;
+ my @string = (ref $string eq 'ARRAY') ? @$string : ($string); 
+ foreach(@string) {
+    $result = index(lc($module_name), lc($_));
+    last if ($result != -1);
+ }
+ return ($result == -1) ? 0 : 1; 
+
+}
+
 sub perl_version {
   my $version;
   if ($] >= 5.006) {
@@ -214,19 +227,16 @@ sub check_module_args {
   elsif ($key eq 'color' && @{$value} <= 1) {
     $message = "You didn't specify a module to color";
   }
-  elsif ($key eq 'color' && ref($value->[1]) ne 'Regexp') {
-    $message = "Not a properly-formatted regular expression in the $key parameter value";
-  }
   elsif ($key eq 'link' && @{$value} <= 1 && $value->[0] != 0) {
     $message = "You didn't provide a URL for the $key parameter";
   }
-  elsif ($key eq 'show_only' && (ref($value) ne 'Regexp') && lc $value ne 'core') {
+  elsif ($key eq 'show_only' && (ref($value) ne 'ARRAY') && lc $value ne 'core') {
     $message = "$value is an invalid value for the $key parameter";
   }
   elsif ($key eq 'full_page' && $value != 0 && $value != 1 ) {
     $message = "$value is an invalid value for the $key parameter";
   }
-  elsif ($key eq 'link' && ($value->[0] ne 'all' && $value->[0] != 0 && ref($value->[0]) ne 'Regexp')) {
+  elsif ($key eq 'link' && ($value->[0] ne 'all' && $value->[0] != 0 && ref($value->[0]) ne 'ARRAY')) {
     $message = "Invalid first element in the $key parameter value";
   }
   error_msg("$message") if $message;
@@ -436,25 +446,43 @@ sub print_license {
 sub add_link {
 
 	my ($type, $value, $link) = @_;
-
 	return $value unless $links{'all'};
-
+    
 	if ($type eq "cpan") {
 
-          #return $value unless $links{'docs'} or $link;
-          return $value if $link && $link->[0] == 0;
-
+	return $value if $link && $link->[0] =~ /^[0]$/;
+	
 	  if ($link) {
-	    if (ref $link eq 'ARRAY') {
-	      foreach (@$link) {
-	        if ($_->[0] eq 'all' or lc $value =~ $_->[0]) {
-		  return '<a href=' . $_->[1] . $value .
+	    if (ref $link->[0] eq 'ARRAY' && ref $link->[1] ne 'ARRAY') {
+	      foreach (@{$link->[0]}) {
+	            if ($_ eq 'all' or match_string($value,$_)==1) {
+		      return '<a href=' . $link->[1] . $value .
                                 qq~ title="Click here to see $value documentation [Opens in a new window]"
-                                target="_blank">$value</a> ~		  
-		}
-	      }	
-	    }
-            elsif ($link->[0] eq 'all' or lc $value =~ $link->[0]) {
+                                target="_blank">$value</a> ~
+		    }		
+                }
+	    }	
+            elsif (ref $link->[0] eq 'ARRAY' && ref $link->[1] eq 'ARRAY'){
+	       foreach my $lv (@$link) {
+	          if (ref $lv->[0] eq 'ARRAY') {
+	            foreach(@{$lv->[0]}) {		  
+                     if ($_ eq 'all' or match_string($value,$_)==1) {	
+                       return '<a href=' . $lv->[1] . $value .
+                                qq~ title="Click here to see $value documentation [Opens in a new window]"
+                                target="_blank">$value</a> ~
+		     }
+                    }		     
+		  }
+                  else {
+		    if ($lv->[0] eq 'all' or match_string($value,$lv->[0])==1) {	
+                       return '<a href=' . $lv->[1] . $value .
+                                qq~ title="Click here to see $value documentation [Opens in a new window]"
+                                target="_blank">$value</a> ~
+		     }	
+		  }
+	      }
+            }	      
+            elsif ($link->[0] eq 'all' or match_string($value,$link->[0])==1) {
 			return '<a href=' . $link->[1] . $value .  
 				qq~ title="Click here to see $value documentation [Opens in a new window]" 
 				target="_blank">$value</a> ~
@@ -476,4 +504,5 @@ sub add_link {
 		return qq~ <a href="$value">$value</a> ~;
 	}
 }
+
 1; 

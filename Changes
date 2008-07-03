@@ -1,5 +1,20 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+
+1.52 Changes
+	-This version fixes a security vulnerability in HTML::Perlinfo::Modules that could lead to denial-of-service attacks. The vulnerability was discovered by Moritz Lenz.
+	HTML::Perlinfo::Modules Changes: 
+        -HTML::Perlinfo::Modules no longer accepts regular expressions as arguments for the show_only, link, and color parameters.    
+	-POD updated
+	INFO_VARIABLES changes:
+	-Default title changed to 'Environment' from 'Environment Variables'
+	-Individual cookies are now listed from HTTP_COOKIE
+	-GET and POST values are also listed
+	INFO_APACHE changes:
+	-Apache titles will not appear if Apache is not detected
+	Bug fixes:
+	-POST values are now shown in INFO_VARIABLES
+
 1.51 Changes
 	INFO_APACHE changes:
 	-Removed App::Info. INFO_APACHE now relies 100% on environment variables.

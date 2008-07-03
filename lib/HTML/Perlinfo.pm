@@ -10,7 +10,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.51';
+$VERSION = '1.52';
 
 # This function is a OO wrapper for the functional interface
 sub perlinfo {
@@ -58,6 +58,15 @@ HTML::Perlinfo - Display a lot of Perl information in HTML format
 	use HTML::Perlinfo;
 
 	perlinfo();
+	
+	
+	use HTML::Perlinfo;
+	use CGI qw(header);
+
+	$|++;
+
+	print header;
+	perlinfo(INFO_MODULES);
 
 =head1 DESCRIPTION
 
@@ -191,8 +200,6 @@ In this example, I am flushing the buffer because I know that there will be a lo
 HTML::Perlinfo stopped printing the header automatically as of version 1.43.  
 
 =head1 BUGS
-
-A bug exists involving POST requests for options INFO_ALL, INFO_CONFIG, INFO_MODULES, and INFO_LICENSE. For example, try perlinfo when submitting a form with a POST method. It will hang. No patch is available at this time. Patches welcome!
 
 Please report any bugs or feature requests to C<bug-html-perlinfo@rt.cpan.org>, or through the web interface at
 L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=HTML-Perlinfo>.
