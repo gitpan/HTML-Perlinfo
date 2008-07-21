@@ -210,7 +210,7 @@ sub check_module_args {
 
   my ($key, $value) = @_;
   my ($message, %allowed);
-  @allowed{qw(from columns sort_by color link show_only section full_page show_inc show_dir)} = ();
+  @allowed{qw(from columns sort_by color link show_only section full_page show_inc show_dir files_in)} = ();
 
   if (not exists $allowed{$key}) {
     $message = "$key is an invalid print_modules parameter";
@@ -218,7 +218,7 @@ sub check_module_args {
   elsif ($key eq 'sort_by' && $value !~ /^(?:name|version)$/i) {
     $message = "$value is an invalid sort"; 
   }
-  elsif ($key =~ /^(?:color|link|columns)$/ && ref($value) ne 'ARRAY') {
+  elsif ($key =~ /^(?:color|link|columns|files_in)$/ && ref($value) ne 'ARRAY') {
     $message = "The $key parameter value is not an array reference";
   }
   elsif ($key eq 'columns' && grep(!/^(?:name|version|desc|path|core)$/, @{$value})) {

@@ -10,6 +10,7 @@ lib/HTML/Perlinfo/Common.pm
 lib/HTML/Perlinfo/Base.pm
 lib/HTML/Perlinfo/Apache.pm
 lib/HTML/Perlinfo/Credits.pm
+lib/HTML/Perlinfo/Loaded.pm
 lib/HTML/Perlinfo/Modules.pm
 lib/HTML/Perlinfo/General.pm
 META.yml                                 Module meta-data (added by MakeMaker)

@@ -8,7 +8,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.11';
+$VERSION = '1.12';
 
 sub new {
 
@@ -31,6 +31,21 @@ sub module_color_check {
 	    return $color_specs->[0] if (defined $color_specs && match_string($module_name,$color_specs->[1])==1);
 	}
 	return 0;
+}
+
+# get_modinfo
+# This sub was created for the files_in option. 
+# Returns found_mod reference
+######################################
+
+sub get_files_in {
+
+    my ($file_path) = @_;
+ 
+    return 0 unless $file_path =~ m/\.pm$/; 
+    my $mod_info = module_info($file_path, undef);
+    return $mod_info;
+
 }
 
 
@@ -93,13 +108,13 @@ return $html;
 }
 
 sub module_info {
-   my ($module_path, $show_only, $get_desc) = @_;
+   my ($module_path, $show_only) = @_;
    my ($mod_name, $mod_version, $mod_desc);
  
    no warnings 'all'; # silence warnings
    open(MOD, $module_path) or return 0; 
     while (<MOD>) {
-	  next if /^\s*#/;
+	    #next if /^\s*#/;
       
       unless ($mod_name) {
 	    if (/^ *package +(\S+);/) { 
@@ -126,7 +141,7 @@ sub module_info {
       }
      }
 
-    if ($get_desc && !$mod_desc) {
+    unless ($mod_desc) {
         if (/=head\d\s+NAME/) {
             local $/ = '';
             local $_;
@@ -134,12 +149,12 @@ sub module_info {
             ($mod_desc) = /^.*?-+\s*(.*?)$/ism;
         }
     }
-    unless ($get_desc && !$mod_desc) {
-        last if $mod_name && $mod_version; 
-    }
+    
+    last if $mod_name && $mod_version && $mod_desc; 
+    
  }
  
-   close MOD;
+   close (MOD);
    return 0 if (! $mod_name || $show_only && ref $show_only && (match_string($mod_name, $show_only) == 0));
    $mod_version = '<i>unknown</i>' if !($mod_version) || ($mod_version !~ /^[\.\d+_]+$/);
    $mod_desc = "<i>No description found</i>" unless $mod_desc;
@@ -303,6 +318,7 @@ sub get_input {
   my $self = shift;
   my $args = process_args(@_, \&check_module_args);
   my %input = ();
+  $input{'files_in'}    = $args->{'files_in'} || undef; 
   $input{'sort_by'}     = $args->{'sort_by'} || 'name';
   $input{'from'}        = $args->{'from'} || \@INC;
   $input{'show_only'}   = $args->{'show_only'} || "";
@@ -320,17 +336,37 @@ sub get_input {
 sub print_modules {
  
   my %input = get_input(@_);
+ 
+  my ($found_mod, $mod_count, $overall_total, @mod_dir);
   
-  # Get ready to search 
-  my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
-  my $core_dir2 = File::Spec->canonpath($Config{installprivlib});
+  # Check to see if a search is even needed
+  if (defined $input{'files_in'}) {
+      
+ 	my @files = @{ $input{'files_in'} };
+ 	my %found_mod = ();
+ 
+        foreach $file_path (@files) {
+		
+	  my $mod_info =  get_files_in($file_path);	
+          next unless (ref $mod_info eq 'HASH');
+          $found_mod{$mod_info->{'name'}} = $mod_info;
+        }
+ 	return undef unless (keys %found_mod > 0);	
+	$found_mod = \%found_mod;
+  }
+  else {
+   
+    # Get ready to search 
+    my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
+    my $core_dir2 = File::Spec->canonpath($Config{installprivlib});
   
-  my @mod_dir = search_dir($input{'from'}, $input{'show_only'}, $core_dir1, $core_dir2);
+    @mod_dir = search_dir($input{'from'}, $input{'show_only'}, $core_dir1, $core_dir2);
 
-  my $get_desc = grep $_ eq 'desc',@{$input{'columns'}};
-  my ($overall_total, $found_mod, $mod_count) = find_modules($input{'show_only'}, $get_desc, \@mod_dir);
+    ($overall_total, $found_mod, $mod_count) = find_modules($input{'show_only'}, \@mod_dir);
   
-  return undef unless $overall_total;
+    return undef unless $overall_total;
+
+  }
   
   my @sorted_modules = sort_modules($found_mod, $input{'sort_by'});
   
@@ -365,12 +401,15 @@ sub print_modules {
   }
   
  $html .= print_table_end();
- $html .= print_module_results( \@mod_dir,
-                                $mod_count, 
-                                $input{'from'}, 
-                                $overall_total, 
-                                $input{'show_dir'}) if $input{'show_inc'};
-                                
+ 
+ unless (defined $input{'files_in'} && ref $input{'files_in'} eq 'ARRAY') {
+   $html .= print_module_results( \@mod_dir,
+                                 $mod_count, 
+                                 $input{'from'}, 
+                                 $overall_total, 
+                                 $input{'show_dir'}) if $input{'show_inc'};
+ }
+ 
  $html .= "</div></body></html>" if $input{'full_page'}; 
   
   defined wantarray ? return $html : print $html;
@@ -379,11 +418,11 @@ sub print_modules {
 
 sub find_modules {
 
-  my ($show_only, $get_desc, $mod_dir) = @_;
+  my ($show_only, $mod_dir) = @_;
 
-  my ( $overall_total, $module, $total_found_inbase, $mod_version, $mod_desc, $base, $eval, $mod_info_line, $start_dir, $mod_name, $new_val, $below_inc, $last_inc_dir );
+  my ($overall_total, $module, $base, $start_dir, $new_val);
   # arrays
-  my (@modinfo_array, @key_value, @inc_dir);
+  my @modinfo_array;
   # hashes
   my ( %path, %inc_path, %mod_count, %found_mod);
   my @mod_dir = @$mod_dir;
@@ -403,7 +442,7 @@ sub find_modules {
 
  	# make sure we are dealing with a module
         return unless $File::Find::name =~ m/\.pm$/; 
-        $mod_info = module_info($File::Find::name, $show_only, $get_desc);
+        $mod_info = module_info($File::Find::name, $show_only);
         return unless ref ($mod_info) eq 'HASH';
 
         # update the counts.
@@ -503,6 +542,14 @@ Show modules from specific directories.
 This parameter accepts 2 things: a single directory or an array reference (containing directories).
 
 The default value is the Perl include path. This is equivalent of supplying \@INC as a value. If you want to show all of the modules on your box, you can specify '/' as a value (or the disk drive on Windows). 
+
+=head3 files_in
+
+If you don't need to search for your files and you already have the B<complete pathnames> to them, then you can use the 'files_in' option which accepts an array reference containing the files you wish to display. One obvious use for this option would be in displaying the contents of the INC hash, which holds the modules used by your Perl module or script:
+
+    $m->print_modules('files_in'=>[values %INC]);
+
+This is the same technique used by the L<HTML::Perlinfo::Loaded> module which performs a post-execution HTML dump of your loaded modules. See L<HTML::Perlinfo::Loaded> for details. 
 
 =head3 columns
 
@@ -682,7 +729,7 @@ If you decide to use this module in a CGI script, make sure you print out the co
 
 =head1 SEE ALSO
 
-L<HTML::Perlinfo>, L<perlinfo>, L<Module::Info>, L<Module::CoreList>.
+L<HTML::Perlinfo::Loaded>, L<HTML::Perlinfo>, L<perlinfo>, L<Module::Info>, L<Module::CoreList>.
 
 =head1 AUTHOR
 

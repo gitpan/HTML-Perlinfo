@@ -74,6 +74,28 @@ sub info_general {
   $html .= "</div></body></html>" if $self->{full_page};
   defined wantarray ? return $html : print $html;
 }
+
+sub info_loaded {
+
+my $self = shift; 
+$self->{'title'} = 'perlinfo(INFO_LOADED)' unless $self->{'title'};
+my $html;
+$html .= $self->print_htmlhead() if $self->{'full_page'};
+
+eval qq{
+
+END {
+
+    \$html .= print_thesemodules('loaded',[values %INC]);
+    \$html .= print_variables();
+    \$html .= '</div></body></html>' if \$self->{'full_page'};
+    print \$html; 
+ }
+
+}; die $@ if $@;
+
+}
+
 sub info_modules {
   my $self = shift;
   my %param = @_;
@@ -198,7 +220,7 @@ sub print_htmlhead {
   my $rightcol_bgcolor = $self->{rightcol_bgcolor};
   my $rightcol_ftcolor = $self->{rightcol_ftcolor};
 
-  return <<"END_OF_HTML";
+  my $html = <<"END_OF_HTML";
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -236,6 +258,8 @@ hr {width: 600px; background-color: #cccccc; border: 0px; height: 1px; color: #0
 </head>
 <body><div class="center">
 END_OF_HTML
+
+defined wantarray ? return $html : print $html;
 }
 
 sub links {

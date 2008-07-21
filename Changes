@@ -1,8 +1,17 @@
 Revision history for Perl extension HTML::Perlinfo 
 
 
+1.53 Changes
+	-Added HTML::Perlinfo::Loaded module
+	-Added INFO_LOADED option to perlinfo
+	-Added 'files_in' option to HTML::Perlinfo::Modules
+	-Finally got around to cleaning up Perlinfo.pm. Now 100% fat free, no sodium. 
+	-Changed internal function print_htmlhead to print/return html
+	-Updated lots of POD
+
 1.52 Changes
-	-This version fixes a security vulnerability in HTML::Perlinfo::Modules that could lead to denial-of-service attacks. The vulnerability was discovered by Moritz Lenz.
+	-This version fixes a security vulnerability in HTML::Perlinfo::Modules that could lead to denial-of-service attacks
+        -The vulnerability was discovered by Moritz Lenz.
 	HTML::Perlinfo::Modules Changes: 
         -HTML::Perlinfo::Modules no longer accepts regular expressions as arguments for the show_only, link, and color parameters.    
 	-POD updated

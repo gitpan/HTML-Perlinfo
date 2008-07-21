@@ -1,5 +1,8 @@
 package HTML::Perlinfo;
+BEGIN { %Seen = %INC }
 
+use strict;
+use warnings;
 use CGI::Carp 'fatalsToBrowser';
 use Carp (); 
 
@@ -10,41 +13,21 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-$VERSION = '1.52';
+our $VERSION = '1.53';
 
-# This function is a OO wrapper for the functional interface
 sub perlinfo {
-  my $info = shift;
-  $info = 'info_all' unless defined $info;
-  $info = uc $info;
-
-  error_msg("@_ is an invalid perlinfo() parameter")
-  if (($info !~ /INFO_ALL|INFO_GENERAL|INFO_CREDITS|INFO_CONFIG|INFO_VARIABLES|INFO_APACHE|INFO_MODULES|INFO_LICENSE/) || @_ > 1); 
+  my ($opt) = @_;
+  $opt = 'INFO_ALL' unless $opt;
  
+  error_msg("Invalid perlinfo() parameter: @_")
+  if (($opt !~ /^INFO_(?:ALL|CREDITS|CONFIG|VARIABLES|APACHE|MODULES|LICENSE|LOADED)$/) || @_ > 1); 
+ 
+  $opt = lc $opt;
   my $p = HTML::Perlinfo->new();
+  $p->$opt;
 
-  if ($info eq 'INFO_ALL') {
-    $p->info_all;
-  }
-  elsif ($info eq 'INFO_GENERAL') {
-    $p->info_general;
-  }
-  elsif ($info eq 'INFO_VARIABLES') {
-    $p->info_variables;
-  }
-  elsif ($info eq 'INFO_CREDITS') {
-    $p->info_credits;
-  }
-  elsif ($info eq 'INFO_CONFIG') {
-    $p->info_config;
-  }
-  elsif ($info eq 'INFO_APACHE') {
-    $p->info_apache;
-  }
-  else {
-    $p->info_modules;
-  }
 }
+%INC = %__PACKAGE__::Seen;
 1;
 __END__
 =pod
@@ -78,7 +61,7 @@ The output may be customized by passing one of the following options.
 
 =head1 OPTIONS
 
-There are 8 options to pass to the perlinfo funtion. All of these options are also object methods. The key difference is their case: Captilize the option name when passing it to the function and use only lower-case letters when using the object-oriented approach.
+There are 9 options to pass to the perlinfo funtion. All of these options are also object methods. The key difference is their case: Captilize the option name when passing it to the function and use only lower-case letters when using the object-oriented approach.
 
 =over
 
@@ -100,8 +83,12 @@ Apache HTTP server information, including mod_perl information.
 
 =item INFO_MODULES 
 
-All installed modules, their version number and much more. INFO_ALL shows only core modules.
+All installed modules, their version number and description. INFO_ALL shows only core modules.
 Please also see L<HTML::Perlinfo::Modules>.
+
+=item INFO_LOADED
+
+Post-execution dump of loaded modules. INFO_ALL shows only core modules. Please also see L<HTML::Perlinfo::Loaded>.
 
 =item INFO_LICENSE 
 
@@ -168,7 +155,11 @@ HTML::Perlinfo does not require any non-core modules.
 
 =head1 NOTES
 
-INFO_APACHE relies on environment variables. It's possible to get more Apache information using App::Info. 
+INFO_APACHE relies soley on environment variables.  
+
+INFO_VARIABLES did not work correctly until version 1.52.
+
+INFO_LOADED is the only option whose output cannot be assigned to a scalar. 
 
 Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
 
@@ -211,7 +202,7 @@ L<Config>. You can also use "perl -V" to see a configuration summary at the comm
 
 L<Apache::Status>, L<App::Info>, L<Probe::Perl>, L<Module::CoreList>, L<Module::Info>, among others.
 
-Also included in the Perlinfo distribution: L<perlinfo>, L<HTML::Perlinfo::Modules> 
+Also included in the Perlinfo distribution: L<perlinfo>, L<HTML::Perlinfo::Loaded>, L<HTML::Perlinfo::Modules> 
 
 =head1 AUTHOR
 
