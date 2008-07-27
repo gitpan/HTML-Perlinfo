@@ -1,5 +1,6 @@
 package HTML::Perlinfo::Modules;
 
+use strict;
 use CGI::Carp 'fatalsToBrowser'; 
 use File::Find;
 use File::Spec;
@@ -8,7 +9,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-$VERSION = '1.12';
+our $VERSION = '1.13';
 
 sub new {
 
@@ -55,7 +56,7 @@ sub sort_modules {
   my @sorted_modules;  
 
   if ($sort_by eq 'name') {
-    foreach $key (sort {lc $a cmp lc $b} keys %$modules) {
+    foreach my $key (sort {lc $a cmp lc $b} keys %$modules) {
           # Check for duplicate modules
           if (ref($modules->{$key}) eq 'ARRAY') {
             foreach (@{ $modules->{$key} }) {
@@ -68,7 +69,7 @@ sub sort_modules {
      }
   }
   elsif ($sort_by eq 'version') {
-    foreach $key (keys %$modules) {
+    foreach my $key (keys %$modules) {
 	if (ref($modules->{$key}) eq 'ARRAY') {
 	  @{ $modules->{$key} } = sort {$a->{'version'} cmp $b->{'version'}}@{ $modules->{$key} };
 	  for (@{ $modules->{$key}}) {
@@ -264,7 +265,7 @@ sub search_dir {
 
   
   my %seen = ();
-
+  
   my @user_dir = (ref($from) eq 'ARRAY') && $show_only ne 'core' ? @{$from} :
                 ($show_only eq 'core')  ? ($core_dir1, $core_dir2) : $from;
 
@@ -276,6 +277,7 @@ sub search_dir {
   # Or maybe not. @user_dir could have duplicate values and that's ok.
   # But let's still warn about any unreadable or non-directories given 
 
+	my @debug;
 	%seen = ();
 	@user_dir = grep { !$seen{$_}++ } map {File::Spec->canonpath($_)}@user_dir;
 	if (@user_dir > @mod_dir) {
@@ -283,7 +285,7 @@ sub search_dir {
         %seen = ();
         @seen{@mod_dir} = ();
 		my @difference = grep { !$seen{$_}++ }@user_dir;
-		foreach $element (@difference) {
+		foreach my $element (@difference) {
 			if (! -d $element) {
 				if ( grep {$_ eq $element} map {File::Spec->canonpath($_)}@INC) {
 					warn "$element is in the Perl include path, but is not a directory";
@@ -291,7 +293,6 @@ sub search_dir {
 				else { 
 					warn "$element is not a directory"; 
 				}
-
 				push @debug, $element;
 			} 
 			elsif (! -r $element) {
@@ -337,7 +338,7 @@ sub print_modules {
  
   my %input = get_input(@_);
  
-  my ($found_mod, $mod_count, $overall_total, @mod_dir);
+  my ($found_mod, $mod_count, $overall_total, @mod_dir, $core_dir1, $core_dir2);
   
   # Check to see if a search is even needed
   if (defined $input{'files_in'}) {
@@ -345,7 +346,7 @@ sub print_modules {
  	my @files = @{ $input{'files_in'} };
  	my %found_mod = ();
  
-        foreach $file_path (@files) {
+        foreach my $file_path (@files) {
 		
 	  my $mod_info =  get_files_in($file_path);	
           next unless (ref $mod_info eq 'HASH');
@@ -357,8 +358,8 @@ sub print_modules {
   else {
    
     # Get ready to search 
-    my $core_dir1 = File::Spec->canonpath($Config{installarchlib});
-    my $core_dir2 = File::Spec->canonpath($Config{installprivlib});
+    $core_dir1 = File::Spec->canonpath($Config{installarchlib});
+    $core_dir2 = File::Spec->canonpath($Config{installprivlib});
   
     @mod_dir = search_dir($input{'from'}, $input{'show_only'}, $core_dir1, $core_dir2);
 
@@ -420,7 +421,7 @@ sub find_modules {
 
   my ($show_only, $mod_dir) = @_;
 
-  my ($overall_total, $module, $base, $start_dir, $new_val);
+  my ($overall_total, $module, $base, $start_dir, $new_val, $mod_info);
   # arrays
   my @modinfo_array;
   # hashes

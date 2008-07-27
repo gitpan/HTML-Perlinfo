@@ -13,7 +13,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-our $VERSION = '1.53';
+our $VERSION = '1.54';
 
 sub perlinfo {
   my ($opt) = @_;
@@ -27,7 +27,7 @@ sub perlinfo {
   $p->$opt;
 
 }
-%INC = %__PACKAGE__::Seen;
+%INC = %HTML::Perlinfo::Seen;
 1;
 __END__
 =pod
@@ -88,7 +88,7 @@ Please also see L<HTML::Perlinfo::Modules>.
 
 =item INFO_LOADED
 
-Post-execution dump of loaded modules. INFO_ALL shows only core modules. Please also see L<HTML::Perlinfo::Loaded>.
+Post-execution dump of loaded modules (plus INFO_VARIABLES). INFO_ALL shows only core modules. Please also see L<HTML::Perlinfo::Loaded>.
 
 =item INFO_LICENSE 
 

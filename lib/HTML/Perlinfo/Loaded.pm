@@ -3,11 +3,12 @@ BEGIN { %Seen = %INC }
 
 use HTML::Perlinfo::Modules;
 
-$VERSION = '1.00';
+$VERSION = '1.01';
 
 %INC = %Seen;
 END { 
-	
+ 
+    delete $INC{'HTML/Perlinfo/Loaded.pm'};	
     my $m = HTML::Perlinfo::Modules->new(full_page=>0, title=>'perlinfo(INFO_LOADED)');
     $m->print_htmlhead; 
     $m->print_modules('files_in'=>[values %INC],'section'=>'Loaded Files');
@@ -32,7 +33,7 @@ HTML::Perlinfo::Loaded - Post-execution HTML dump of loaded modules and environm
 
 This module installs an at-exit handler to generate an HTML dump of all the module files used by a Perl program. As an added bonus, environment variables are also included in this dump. When used under mod_perl, the module will show you preloaded modules in the HTML page too.
 
-Since the "dump" is a complete HTML page, this module is a good debugging tool for Web applications.   
+Since the "dump" is a complete HTML page, this module is a good debugging tool for Web applications. Just make sure you print the content-type header beforehand or you will get an internal server error (malformed header).   
 
 Note that the HTML::Perlinfo function 'perlinfo' has an option called INFO_LOADED that will produce the same result. In other words, there is more than one way to do it! Observe:
 
@@ -46,7 +47,7 @@ The result will be the same if you say:
     use HTML::Perlinfo::Loaded;
     ...
 
-There is no difference, except using the perlinfo option gives you greater control. You could always control HTMl::Perlinfo::Loaded with a pound sign (a comment on/off), but if you are using mod_perl it makes more sense to add HTML::Perlinfo to your startup file and then call perlinfo(INFO_LOADED) when you want to dump.
+There is no difference, except using the perlinfo option gives you greater control. You could always control HTML::Perlinfo::Loaded with a pound sign (a comment on/off), but if you are using mod_perl it makes more sense to add HTML::Perlinfo to your startup file and then call perlinfo(INFO_LOADED) when you want to dump.
 
 =head1 SEE ALSO
 

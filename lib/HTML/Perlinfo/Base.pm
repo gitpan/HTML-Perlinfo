@@ -85,7 +85,7 @@ $html .= $self->print_htmlhead() if $self->{'full_page'};
 eval qq{
 
 END {
-
+    delete \$INC{'HTML/Perlinfo.pm'};
     \$html .= print_thesemodules('loaded',[values %INC]);
     \$html .= print_variables();
     \$html .= '</div></body></html>' if \$self->{'full_page'};

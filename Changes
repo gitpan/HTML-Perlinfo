@@ -1,5 +1,11 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.54 Changes
+	-HTML::Perlinfo::Loaded & HTML::Perlinfo no longer show in INFO_LOADED
+	-Added strict to HTML::Perlinfo::Modules. 
+	-Improved POD in HTML::Perlinfo & HTML::Perlinfo::Loaded
+	Bug fix:
+	-INFO_LOADED wasn't showing all the modules used. Fixed now. 
 
 1.53 Changes
 	-Added HTML::Perlinfo::Loaded module
