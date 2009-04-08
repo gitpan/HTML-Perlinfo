@@ -1,5 +1,9 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.56 Changes
+       Bug fixes:
+	-Fixed some errors in HTML::Perlinfo::Modules
+
 1.55 Changes
 	Bug fixes:
 	-HTML::Perlinfo now runs under taint mode.

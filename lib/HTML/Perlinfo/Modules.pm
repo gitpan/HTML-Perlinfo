@@ -9,7 +9,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-our $VERSION = '1.14';
+our $VERSION = '1.15';
 
 sub new {
 
@@ -111,15 +111,13 @@ return $html;
 sub module_info {
    my ($module_path, $show_only) = @_;
 
-   # untaint data
-   ( $module_path ) = $module_path =~ /^([\w.])$/;
+   ( $module_path ) = $module_path =~ /^(.*)$/; 
    
    my ($mod_name, $mod_version, $mod_desc);
  
    no warnings 'all'; # silence warnings
    open(MOD, $module_path) or return 0; 
     while (<MOD>) {
-	    #next if /^\s*#/;
       
       unless ($mod_name) {
 	    if (/^ *package +(\S+);/) { 
@@ -139,6 +137,9 @@ sub module_info {
         $_
         }; \$$2
        };
+       
+       ( $eval ) = $eval =~ /^(.*)$/sm;
+	       
        $mod_version = eval($eval);
        # Again let us be nice here.
        $mod_version = '<i>unknown</i>' if (not defined $mod_version) || ($@);
@@ -430,7 +431,7 @@ sub find_modules {
   my (@modinfo_array, @mod_dir);
   # hashes
   my ( %path, %inc_path, %mod_count, %found_mod);
-  my @mod_dir = @$mod_dir;
+  @mod_dir = @$mod_dir;
   
   @path{@mod_dir} = ();
   @inc_path{@INC} = (); 
