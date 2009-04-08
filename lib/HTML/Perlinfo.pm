@@ -13,7 +13,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-our $VERSION = '1.54';
+our $VERSION = '1.55';
 
 sub perlinfo {
   my ($opt) = @_;
@@ -55,7 +55,7 @@ HTML::Perlinfo - Display a lot of Perl information in HTML format
 
 This module outputs a large amount of information about your Perl installation in HTML. So far, this includes information about Perl compilation options, the Perl version, server information and environment, HTTP headers, OS version information, Perl modules, and more. 
 
-HTML::Perlinfo is aimed at Web developers, but almost anyone using Perl may find it useful. It is a valuable debugging tool as it contains all EGPCS (Environment, GET, POST, Cookie, Server) data.
+HTML::Perlinfo is aimed at Web developers, but almost anyone using Perl may find it useful. It is a valuable debugging tool as it contains all EGPCS (Environment, GET, POST, Cookie, Server) data. It will also work under taint mode.  
 
 The output may be customized by passing one of the following options. 
 

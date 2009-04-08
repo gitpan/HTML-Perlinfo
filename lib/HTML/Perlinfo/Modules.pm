@@ -9,7 +9,7 @@ use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
 use HTML::Perlinfo::Common;
 
-our $VERSION = '1.13';
+our $VERSION = '1.14';
 
 sub new {
 
@@ -110,6 +110,10 @@ return $html;
 
 sub module_info {
    my ($module_path, $show_only) = @_;
+
+   # untaint data
+   ( $module_path ) = $module_path =~ /^([\w.])$/;
+   
    my ($mod_name, $mod_version, $mod_desc);
  
    no warnings 'all'; # silence warnings
@@ -360,7 +364,7 @@ sub print_modules {
     # Get ready to search 
     $core_dir1 = File::Spec->canonpath($Config{installarchlib});
     $core_dir2 = File::Spec->canonpath($Config{installprivlib});
-  
+   
     @mod_dir = search_dir($input{'from'}, $input{'show_only'}, $core_dir1, $core_dir2);
 
     ($overall_total, $found_mod, $mod_count) = find_modules($input{'show_only'}, \@mod_dir);
@@ -423,7 +427,7 @@ sub find_modules {
 
   my ($overall_total, $module, $base, $start_dir, $new_val, $mod_info);
   # arrays
-  my @modinfo_array;
+  my (@modinfo_array, @mod_dir);
   # hashes
   my ( %path, %inc_path, %mod_count, %found_mod);
   my @mod_dir = @$mod_dir;
@@ -431,7 +435,8 @@ sub find_modules {
   @path{@mod_dir} = ();
   @inc_path{@INC} = (); 
   for $base (@mod_dir) {  
-    find ( sub { 
+  
+    find ({ wanted => sub { 
 	for (@INC, @mod_dir) {
 	  if (index($File::Find::name, $_) == 0) {
 	  # lets record it unless we already have hit the dir
@@ -443,7 +448,7 @@ sub find_modules {
 
  	# make sure we are dealing with a module
         return unless $File::Find::name =~ m/\.pm$/; 
-        $mod_info = module_info($File::Find::name, $show_only);
+	$mod_info = module_info($File::Find::name, $show_only);
         return unless ref ($mod_info) eq 'HASH';
 
         # update the counts.
@@ -466,7 +471,7 @@ sub find_modules {
 	  $found_mod{$mod_info->{'name'}} = $mod_info;
 	}
 				  
-      }, $base); 
+      },untaint => 1, untaint_pattern => qr|^([-+@\s\S\w./]+)$|}, $base); 
    } # end of for loop
 
   return ($overall_total, \%found_mod, \%mod_count);
