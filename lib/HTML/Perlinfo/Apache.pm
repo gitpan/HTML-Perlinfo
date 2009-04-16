@@ -2,7 +2,6 @@ package HTML::Perlinfo::Apache;
 
 use warnings;
 use strict;
-use CGI::Carp 'fatalsToBrowser';
 use HTML::Perlinfo::Common;
 
 

@@ -1,5 +1,11 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+
+1.57 Changes
+     -Removed INFO_CREDITS. This option would always have been out of date as soon as a new Perl release. Plus, the JavaScript link on INFO_ALL was causing errors for certain security levels of IE. Besides, it is not very useful. Perhaps the option will return in a future release. 
+     -Removed CGI::Carp 'fatalsToBrowser'. Having this there seemed like a good idea, until I realized that its inclusion, forced its usage for users of HTML::Perlinfo. Since I don't like forcing anything on anyone, it has been removed.
+     -Removed the test program (HTML::Perlinfo.t). I couldn't solve all of the persistent errors and I realized that it really makes no sense to include tests for this module. I can use 'perlinfo' to see if the pages are rendered properly.  
+
 1.56 Changes
        Bug fixes:
 	-Fixed some errors in HTML::Perlinfo::Modules

@@ -1,10 +1,8 @@
 package HTML::Perlinfo::Base;
 
 
-use CGI::Carp 'fatalsToBrowser';
 use HTML::Perlinfo::Common;
 use HTML::Perlinfo::General;
-use HTML::Perlinfo::Credits;
 use Carp ();
 use warnings;
 use strict;
@@ -54,7 +52,6 @@ sub info_all {
   my $html;
   $self->{title} = 'perlinfo(INFO_ALL)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
-  $html .= $self->print_script();
   $html .= print_general();
   $html .= print_variables();
   $html .= print_thesemodules('core');
@@ -108,18 +105,6 @@ sub info_modules {
   $html .= "</div></body></html>"  if $self->{'full_page'};
   defined wantarray ? return $html : print $html;
 }
-sub info_credits {
-  my $self = shift;
-  my %param = @_;
-  error_msg("invalid parameter") if (defined $_[0] && exists $param{'links'} && ref $param{'links'} ne 'ARRAY');   
-  $self->links(@{$param{'links'}}) if exists $param{'links'};
-  my $html;
-  $self->{title} = 'perlinfo(INFO_CREDITS)' unless $self->{title};
-  $html .= $self->print_htmlhead() if $self->{full_page};
-  $html .= print_credits(); 
-  $html .= "</div></body></html>" if $self->{full_page};
-  defined wantarray ? return $html : print $html;
-}
 sub info_config {
   my $self = shift;
   my %param = @_;
@@ -170,30 +155,6 @@ sub info_license {
   defined wantarray ? return $html : print $html;
 }
 
-sub print_script {
-
-        my $HTML =  "<script type=\"text/javascript\" language=\"JavaScript\">\n<!--\n function showcredits () {\n";
-        my $str = shift->print_htmlhead();
-        $str .= print_credits();
-        $str .= "<form><input type='submit' value='close window' onclick='window.close(); return false;'></form>";
-        $str .= "</div></body></html>";
-        $str =~ s/"/\\"/g;
-        my @arr = split /\n/, $str;
-        $HTML .= "contents=\"$arr[0]\"" . ';';
-        $HTML .= $_ for map{"\ncontents+= \"$arr[$_]\";"} 1 .. $#arr;
-        $HTML .= <<'END_OF_HTML';
-
-Win1=window.open( '' , 'Window1' , 'location=yes,toolbar=yes,menubar=yes,directories=yes,status=yes,resizable=yes,scrollbars=yes');
-Win1.moveTo(0,0);
-Win1.resizeTo(screen.width,screen.height);
-Win1.document.writeln(contents);
-Win1.document.close();
-        }
-        //--></SCRIPT>
-END_OF_HTML
-
-        return $HTML;
-  }
 
 sub print_htmlhead {
 	

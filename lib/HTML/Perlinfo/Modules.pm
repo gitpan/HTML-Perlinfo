@@ -1,7 +1,6 @@
 package HTML::Perlinfo::Modules;
 
 use strict;
-use CGI::Carp 'fatalsToBrowser'; 
 use File::Find;
 use File::Spec;
 use Carp ();

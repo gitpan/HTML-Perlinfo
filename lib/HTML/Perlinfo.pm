@@ -3,7 +3,6 @@ BEGIN { %Seen = %INC }
 
 use strict;
 use warnings;
-use CGI::Carp 'fatalsToBrowser';
 use Carp (); 
 
 use HTML::Perlinfo::Apache;
@@ -13,14 +12,14 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-our $VERSION = '1.56';
+our $VERSION = '1.57';
 
 sub perlinfo {
   my ($opt) = @_;
   $opt = 'INFO_ALL' unless $opt;
  
   error_msg("Invalid perlinfo() parameter: @_")
-  if (($opt !~ /^INFO_(?:ALL|CREDITS|CONFIG|VARIABLES|APACHE|MODULES|LICENSE|LOADED)$/) || @_ > 1); 
+  if (($opt !~ /^INFO_(?:ALL|CONFIG|VARIABLES|APACHE|MODULES|LICENSE|LOADED)$/) || @_ > 1); 
  
   $opt = lc $opt;
   my $p = HTML::Perlinfo->new();
@@ -61,7 +60,7 @@ The output may be customized by passing one of the following options.
 
 =head1 OPTIONS
 
-There are 9 options to pass to the perlinfo funtion. All of these options are also object methods. The key difference is their case: Captilize the option name when passing it to the function and use only lower-case letters when using the object-oriented approach.
+There are 8 options to pass to the perlinfo funtion. All of these options are also object methods. The key difference is their case: Captilize the option name when passing it to the function and use only lower-case letters when using the object-oriented approach.
 
 =over
 
@@ -93,10 +92,6 @@ Post-execution dump of loaded modules (plus INFO_VARIABLES). INFO_ALL shows only
 =item INFO_LICENSE 
 
 Perl license information.
-
-=item INFO_CREDITS
-
-Shows the credits for Perl, listing the Perl pumpkings, developers, module authors, etc.
 
 =item INFO_ALL
 
@@ -131,13 +126,13 @@ Object-oriented style:
 More examples ...
 
 	# This is wrong (no capitals)
-	$p->INFO_CREDITS;
+	$p->INFO_MODULES;
 
 	# But this is correct
-	perlinfo(INFO_CREDITS);
+	perlinfo(INFO_MODULES);
 	
 	# Ditto
-	$p->info_credits;
+	$p->info_modules;
 
 =head1 CUSTOMIZING THE HTML
 

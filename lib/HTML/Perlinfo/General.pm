@@ -2,7 +2,6 @@ package HTML::Perlinfo::General;
 
 use base qw(Exporter);
 our @EXPORT = qw(print_httpd print_thesemodules print_config print_variables print_general); 
-use CGI::Carp 'fatalsToBrowser';
 use CGI qw(url_param param);
 use POSIX qw(uname);
 use Config qw(%Config config_sh);
@@ -176,20 +175,6 @@ $html .= print_table_end();
     $html .= "This is perl, v$Config{version} built for $Config{archname}<br />Copyright (c) 1987-@{[ sprintf '%d', (localtime)[5]+1900]}, Larry Wall";
     $html .= print_box_end();
 
-  $html .= print_hr();
-  if ($HTML::Perlinfo::Common::links{'all'}) {
-    $html .=<<'END_OF_HTML';
-<h1>
-<script type="text/javascript" language="JavaScript">
-<!--
-document.write("<a onclick=\"showcredits();\" href=\"javascript:void(0);\">Perl Credits</a>");
-//-->
-</script>
-<noscript>Enable JavaScript to see the credits. Alternatively you can use perlinfo(INFO_CREDITS). 
-</noscript>
-</h1>
-END_OF_HTML
-   }
   $html .= print_hr();
   $html .= "<h1>Configuration</h1>\n";
   $html .= print_config('info_all'); 
