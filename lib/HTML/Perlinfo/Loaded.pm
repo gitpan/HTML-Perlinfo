@@ -3,7 +3,7 @@ BEGIN { %Seen = %INC }
 
 use HTML::Perlinfo::Modules;
 
-$VERSION = '1.01';
+$VERSION = '1.02';
 
 %INC = %Seen;
 END { 
@@ -11,7 +11,7 @@ END {
     delete $INC{'HTML/Perlinfo/Loaded.pm'};	
     my $m = HTML::Perlinfo::Modules->new(full_page=>0, title=>'perlinfo(INFO_LOADED)');
     $m->print_htmlhead; 
-    $m->print_modules('files_in'=>[values %INC],'section'=>'Loaded Files');
+    $m->print_modules('files_in'=>[values %INC],'section'=>'Loaded Modules');
     print $m->info_variables,"</div></body></html>";
 }
 

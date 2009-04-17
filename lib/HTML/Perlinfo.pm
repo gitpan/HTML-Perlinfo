@@ -12,14 +12,14 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-our $VERSION = '1.57';
+our $VERSION = '1.58';
 
 sub perlinfo {
   my ($opt) = @_;
   $opt = 'INFO_ALL' unless $opt;
  
   error_msg("Invalid perlinfo() parameter: @_")
-  if (($opt !~ /^INFO_(?:ALL|CONFIG|VARIABLES|APACHE|MODULES|LICENSE|LOADED)$/) || @_ > 1); 
+  if (($opt !~ /^INFO_(?:ALL|GENERAL|CONFIG|VARIABLES|APACHE|MODULES|LICENSE|LOADED)$/) || @_ > 1); 
  
   $opt = lc $opt;
   my $p = HTML::Perlinfo->new();
@@ -66,7 +66,7 @@ There are 8 options to pass to the perlinfo funtion. All of these options are al
 
 =item INFO_GENERAL
 
-The configuration line, build date, Web Server, System and more.
+The configuration line, build date, and more.
 
 =item INFO_VARIABLES
 
@@ -195,7 +195,7 @@ I will be notified, and then you'll automatically be notified of progress on you
 
 L<Config>. You can also use "perl -V" to see a configuration summary at the command-line.
 
-L<Apache::Status>, L<App::Info>, L<Probe::Perl>, L<Module::CoreList>, L<Module::Info>, among others.
+L<CGI::Carp::Fatals>, L<Apache::Status>, L<App::Info>, L<Probe::Perl>, L<Module::CoreList>, L<Module::Info>, among others.
 
 Also included in the Perlinfo distribution: L<perlinfo>, L<HTML::Perlinfo::Loaded>, L<HTML::Perlinfo::Modules> 
 
@@ -205,7 +205,7 @@ Mike Accardo <mikeaccardo@yahoo.com>
 
 =head1 COPYRIGHT
 
-   Copyright (c) 2004-8, Mike Accardo. All Rights Reserved.
+   Copyright (c) 2004-9, Mike Accardo. All Rights Reserved.
  This module is free software. It may be used, redistributed
 and/or modified under the terms of the Perl Artistic License.
 

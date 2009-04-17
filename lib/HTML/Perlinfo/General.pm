@@ -117,7 +117,7 @@ sub print_httpd {
     	return $m->print_modules(section=>'All Perl modules', full_page=>0);
     }
     elsif ($opt eq 'loaded' && ref $_[0] eq 'ARRAY') {
-    	return $m->print_modules(section=>'Loaded Files', files_in=>shift, full_page=>0);
+    	return $m->print_modules(section=>'Loaded Modules', files_in=>shift, full_page=>0);
     }
     else {
 	die "internal function print_thesemodules has invalid arguments: @_";
@@ -126,6 +126,8 @@ sub print_httpd {
 
 sub print_general {
 
+  my $opt = shift || 'full';
+  
   my $html = print_box_start(1);
   $html .= sprintf("<h1 class=\"p\">Perl Version %s</h1><br clear=all>Release date: %s", perl_version(), release_date());
 		 
@@ -175,6 +177,8 @@ $html .= print_table_end();
     $html .= "This is perl, v$Config{version} built for $Config{archname}<br />Copyright (c) 1987-@{[ sprintf '%d', (localtime)[5]+1900]}, Larry Wall";
     $html .= print_box_end();
 
+    return $html if $opt eq 'top';
+    
   $html .= print_hr();
   $html .= "<h1>Configuration</h1>\n";
   $html .= print_config('info_all'); 

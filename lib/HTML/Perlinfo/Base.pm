@@ -67,7 +67,7 @@ sub info_general {
   my $html;
   $self->{title} = 'perlinfo(INFO_GENERAL)' unless $self->{title};
   $html .= $self->print_htmlhead() if $self->{full_page};
-  $html .= print_general();
+  $html .= print_general('top');
   $html .= "</div></body></html>" if $self->{full_page};
   defined wantarray ? return $html : print $html;
 }
