@@ -11,4 +11,6 @@ lib/HTML/Perlinfo/Apache.pm
 lib/HTML/Perlinfo/Loaded.pm
 lib/HTML/Perlinfo/Modules.pm
 lib/HTML/Perlinfo/General.pm
+t/test.t
+t/info.cgi
 META.yml                                 Module meta-data (added by MakeMaker)

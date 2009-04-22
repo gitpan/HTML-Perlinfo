@@ -1,4 +1,4 @@
-HTML-Perlinfo version 1.58
+HTML-Perlinfo version 1.59
 =========================
 
 NAME
@@ -17,6 +17,7 @@ To install this module type the following:
 
    perl Makefile.PL
    make
+   make test
    make install
 
 DEPENDENCIES

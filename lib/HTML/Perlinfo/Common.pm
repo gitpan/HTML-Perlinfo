@@ -381,7 +381,7 @@ sub  print_table_colspan_header {
 
   sub print_box_end {
 	  my $HTML = "</td></tr>\n";
-	  $HTML = print_table_end();
+	  $HTML .= print_table_end();
 	  return $HTML;
   }
 
@@ -423,12 +423,14 @@ This program is free software; you can redistribute it and/or modify it under th
 either the Artistic License or the GNU General Public License, which may be found in the Perl 5 source kit.
 </p>
 
-<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+<p>
+This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 </p>
 <p>
 Complete documentation for Perl, including FAQ lists, should be found on
 this system using `man perl' or `perldoc perl'.  If you have access to the
-Internet, point your browser at @{[ add_link('same', 'http://www.perl.org/')]}, the Perl directory. 
+Internet, point your browser at @{[ add_link('same', 'http://www.perl.org/')]}, the Perl directory.
+</p> 
 END_OF_HTML
 
   }

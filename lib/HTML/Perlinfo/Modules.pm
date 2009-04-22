@@ -6,9 +6,11 @@ use File::Spec;
 use Carp ();
 use Config qw(%Config);
 use base qw(HTML::Perlinfo::Base);
+use CGI qw(escapeHTML);
 use HTML::Perlinfo::Common;
 
-our $VERSION = '1.15';
+our $VERSION = '1.16';
+
 
 sub new {
 
@@ -18,6 +20,7 @@ sub new {
     $class->SUPER::new(%params);
 
 }
+
 
 sub module_color_check {
 
@@ -162,6 +165,7 @@ sub module_info {
    close (MOD);
    return 0 if (! $mod_name || $show_only && ref $show_only && (match_string($mod_name, $show_only) == 0));
    $mod_version = '<i>unknown</i>' if !($mod_version) || ($mod_version !~ /^[\.\d+_]+$/);
+   $mod_desc = escapeHTML($mod_desc) if $mod_desc;
    $mod_desc = "<i>No description found</i>" unless $mod_desc;
    return { 'name' => $mod_name, 'version' => $mod_version, 'desc' => $mod_desc };
 }
@@ -255,8 +259,6 @@ sub print_module_results {
   #          ($from eq 'core') ? 'core' : 'found';
 
   $html .= print_table_row(2, "Total modules", $overall_total);
-  $html .= print_table_end();
-
   $html .= print_table_end();
 
   return $html;

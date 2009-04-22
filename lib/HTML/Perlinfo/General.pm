@@ -129,7 +129,7 @@ sub print_general {
   my $opt = shift || 'full';
   
   my $html = print_box_start(1);
-  $html .= sprintf("<h1 class=\"p\">Perl Version %s</h1><br clear=all>Release date: %s", perl_version(), release_date());
+  $html .= sprintf("<h1 class=\"p\">Perl Version %s</h1><br style=\"clear:both\" />Release date: %s", perl_version(), release_date());
 		 
   $html .= print_box_end();
 

@@ -1,5 +1,14 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.59 Changes
+      -HTML::Perlinfo now validates as XHTML 1.0 Transitional.
+      -Updated the perlinfo utility with INFO_GENERAL
+      -Added 5 new tests.
+      -Bug fixes:
+	HTML::Perlinfo::Modules
+	-The module description was not escaping POD tags, so some abstracts were garbled. 
+	Fixed now. 
+
 1.58 Changes
       -Changed title from 'Loaded Files' to 'Loaded Modules' for INFO_LOADED.
       -Minor POD update.

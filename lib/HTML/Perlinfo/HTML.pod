@@ -6,6 +6,8 @@ HTML::Perlinfo::HTML - HTML documentation for the perlinfo library
 
 =head1 SUMMARY
 
+HTML::Perlinfo validates as XHTML 1.0 Transitional. 
+
 In the perlinfo library, L<HTML::Perlinfo> and L<HTML::Perlinfo::Modules> use the internal module HTML::Perlinfo::Common for HTML generation. This document provides information on that HTML and its manipulation.  
 
 =head1 CUSTOMIZING THE HTML
@@ -140,6 +142,6 @@ Mike Accardo <mikeaccardo@yahoo.com>
 
 =head1 COPYRIGHT
 
-   Copyright (c) 2006, Mike Accardo. All Rights Reserved.
+   Copyright (c) 2009, Mike Accardo. All Rights Reserved.
 
 =cut

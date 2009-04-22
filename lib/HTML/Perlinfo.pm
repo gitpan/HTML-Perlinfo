@@ -12,7 +12,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-our $VERSION = '1.58';
+our $VERSION = '1.59';
 
 sub perlinfo {
   my ($opt) = @_;
@@ -66,7 +66,7 @@ There are 8 options to pass to the perlinfo funtion. All of these options are al
 
 =item INFO_GENERAL
 
-The configuration line, build date, and more.
+The Perl version, build date, and more.
 
 =item INFO_VARIABLES
 

@@ -6,14 +6,14 @@ use Pod::Usage;
 use strict;
 use warnings;
 
-my $version = "1.01";
+my $version = "1.02";
 my %Opts;
 
 if ( !@ARGV ) {
     pod2usage(0);
 }
 
-GetOptions(\%Opts, qw[ help|? version all i:s c:s m:s e:s ] ) 
+GetOptions(\%Opts, qw[ help|? version all i:s c:s g:s m:s e:s ] ) 
 	or die pod2usage(0);
 
 pod2usage(1) if $Opts{help};
@@ -22,13 +22,14 @@ pod2usage(1) if $Opts{help};
 if ($Opts{version}) {
   print STDERR "perlinfo version $version\n";
   print STDERR "HTML::Perlinfo version $HTML::Perlinfo::VERSION\n";
-  print STDERR "Copyright (c) 2008 by Mike Accardo\n";
+  print STDERR "Copyright (c) 2009 by Mike Accardo\n";
   exit;
 }
 
 my %hok = (
       i => { o=> 'INFO_ALL',      f=>'perlinfo.html'},
       c => { o=> 'INFO_CONFIG',   f=>'perlconfig.html'},
+      g => { o=> 'INFO_GENERAL',  f=>'perlversion.html'},
       e => { o=> 'INFO_VARIABLES',f=>'variables.html'},
       m => { o=> 'INFO_MODULES',  f=>'perlmodules.html'},
   );
@@ -79,7 +80,7 @@ See L<HTML::Perlinfo> for one.
 =head1 SYNOPSIS
 
     perlinfo -i
-    perlinfo [-help] [-version] [-all] [-i|-c|-m|-e] <FileName> ...
+    perlinfo [-help] [-version] [-all] [-i|-c|-g|-m|-e] <FileName> ...
 
 =head1 OPTIONS
 
@@ -89,6 +90,7 @@ All options (except for I<help> and I<version>) use the perlinfo function to pro
 
   -i   | INFO_ALL        | perlinfo.html
   -c   | INFO_CONFIG     | perlconfig.html
+  -g   | INFO_GENERAL    | perlversion.html
   -m   | INFO_MODULES    | perlmodules.html
   -e   | INFO_VARIABLES  | variables.html 
 
@@ -122,7 +124,7 @@ perlinfo and HTML::Perlinfo versions
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 by Mike Accardo
+Copyright (c) 2009 by Mike Accardo
 
 This program is distributed under the same terms as perl itself.
 See http://perl.org/ or http://cpan.org/ for more info on that.
