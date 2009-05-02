@@ -1,5 +1,10 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.60 Changes
+      HTML::Perlinfo::Modules
+      -Improved the version extraction method for modules. 
+       HTML::Perlinfo will show its version now in INFO_MODULES     
+
 1.59 Changes
       -HTML::Perlinfo now validates as XHTML 1.0 Transitional.
       -Updated the perlinfo utility with INFO_GENERAL

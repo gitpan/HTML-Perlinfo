@@ -9,7 +9,7 @@ use base qw(HTML::Perlinfo::Base);
 use CGI qw(escapeHTML);
 use HTML::Perlinfo::Common;
 
-our $VERSION = '1.16';
+our $VERSION = '1.17';
 
 
 sub new {
@@ -130,18 +130,19 @@ sub module_info {
       unless ($mod_version) {
 	
       if (/([\$*])(([\w\:\']*)\bVERSION)\b.*\=/) {
+	      
+       my $line = substr $_, index($_, $1);
        my $eval = qq{
         package HTML::Perlinfo::_version;
         no strict;
 
         local $1$2;
         \$$2=undef; do {
-        $_
+        $line
         }; \$$2
        };
        
        ( $eval ) = $eval =~ /^(.*)$/sm;
-	       
        $mod_version = eval($eval);
        # Again let us be nice here.
        $mod_version = '<i>unknown</i>' if (not defined $mod_version) || ($@);
@@ -582,7 +583,7 @@ The module name. This value is the namespace in the package declaration. Note th
 
 =item version
 
-The version number. Divines the value of $VERSION. This uses the same method as ExtUtils::MakeMaker and all caveats therein apply. 
+The version number. Divines the value of $VERSION.  
 
 =item desc
 
