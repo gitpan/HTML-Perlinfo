@@ -1,5 +1,10 @@
 Revision history for Perl extension HTML::Perlinfo 
 
+1.61 No Changes
+     I am trying to avoid the world writables policy on pause.
+     The last version was fine, but I am trying to lose the 
+     'withoutworldwritables' ext. 
+    
 1.60 Changes
       HTML::Perlinfo::Modules
       -Improved the version extraction method for modules. 
