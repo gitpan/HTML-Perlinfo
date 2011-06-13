@@ -12,7 +12,7 @@ use HTML::Perlinfo::Common;
 use base qw(Exporter HTML::Perlinfo::Base);
 our @EXPORT = qw(perlinfo);
 
-our $VERSION = '1.61';
+our $VERSION = '1.62';
 
 sub perlinfo {
   my ($opt) = @_;
@@ -201,7 +201,7 @@ Also included in the Perlinfo distribution: L<perlinfo>, L<HTML::Perlinfo::Loade
 
 =head1 AUTHOR
 
-Mike Accardo <mikeaccardo@yahoo.com>
+Mike Accardo <accardo@cpan.org>
 
 =head1 COPYRIGHT
 
