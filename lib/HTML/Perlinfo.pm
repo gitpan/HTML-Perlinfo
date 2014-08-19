@@ -146,17 +146,19 @@ Displaying detailed server information on the internet is not a good idea and HT
 
 =head1 REQUIREMENTS
 
-HTML::Perlinfo does not require any non-core modules. 
+HTML::Perlinfo does not require any non-core modules. There are no requirements, except Perl version 5.6 and above. 
 
 =head1 NOTES
 
-INFO_APACHE relies soley on environment variables.  
+1. Print the content-type header first if you are using the module in a CGI setting. (mod_perl handles this for you automatically.) If you do not print the header, you will produce an internal server error. Of course, you can forgo a Web server entirely and use the module at the command-line. Please see the L<perlinfo> tool included in this distribution. 
+
+2. If the HTML takes too long to load in the browser, then you can try flushing the output buffer. By flushing the buffer, the HTML will start appearing immediately. 
+
+INFO_APACHE relies soley on environment variables. If you don't use Apache, there is nothing to worry about. You do not need to turn INFO_APACHE off or anything. The section will simply not appear. Any Web server information will still be in the environment variables, unless you configure your server to not report information.   
 
 INFO_VARIABLES did not work correctly until version 1.52.
 
 INFO_LOADED is the only option whose output cannot be assigned to a scalar. 
-
-Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
 
 Since the module outputs HTML, you may want to use it in a CGI script, but you do not have to. Of course, some information, like HTTP headers, would not be available if you use the module at the command-line. If you decide to use this module in a CGI script, B<make sure you print out the content-type header beforehand>. For example:
 
@@ -173,6 +175,10 @@ I prefer to use the header function from the CGI module:
 	print header;
 	perlinfo();
 
+HTML::Perlinfo stopped printing the header automatically as of version 1.43.
+
+By flushing the output buffer, you can make the HTML appear immediately. If your program is running slow, then you can try flushing the buffer.
+
 In this example, I am flushing the buffer because I know that there will be a lot of modules:
 
 	use HTML::Perlinfo;
@@ -183,7 +189,7 @@ In this example, I am flushing the buffer because I know that there will be a lo
 	print header;
 	perlinfo(INFO_MODULES);
 
-HTML::Perlinfo stopped printing the header automatically as of version 1.43.  
+Some might notice that HTML::Perlinfo shares the look and feel of the PHP function phpinfo. It was originally inspired by that function and was first released in 2004 as PHP::Perlinfo, which is no longer available on CPAN.   
 
 =head1 BUGS
 
