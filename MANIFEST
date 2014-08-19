@@ -5,6 +5,7 @@ MANIFEST
 META.yml
 Makefile.PL
 README
+bin/perlinfo
 dist.ini
 lib/HTML/Perlinfo.pm
 lib/HTML/Perlinfo/Apache.pm
@@ -14,6 +15,5 @@ lib/HTML/Perlinfo/General.pm
 lib/HTML/Perlinfo/HTML.pod
 lib/HTML/Perlinfo/Loaded.pm
 lib/HTML/Perlinfo/Modules.pm
-perlinfo
 t/info.cgi
 t/test.t

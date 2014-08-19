@@ -12,4 +12,6 @@ meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
 name: HTML-Perlinfo
-version: '1.63'
+resources:
+  repository: git://github.com/mixedconnections/HTML-Perlinfo.git
+version: '1.64'

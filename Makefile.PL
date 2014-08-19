@@ -16,11 +16,14 @@ my %WriteMakefileArgs = (
     "ExtUtils::MakeMaker" => 0
   },
   "DISTNAME" => "HTML-Perlinfo",
-  "EXE_FILES" => [],
+  "EXE_FILES" => [
+    "bin/perlinfo",
+    "bin/perlinfo"
+  ],
   "LICENSE" => "perl",
   "NAME" => "HTML::Perlinfo",
   "PREREQ_PM" => {},
-  "VERSION" => "1.63",
+  "VERSION" => "1.64",
   "test" => {
     "TESTS" => "t/*.t"
   }
